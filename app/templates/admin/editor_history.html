@@ -1,0 +1,35 @@
+{% extends "admin/base.html" %}
+{% block title %}История версий{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>История версий</h1>
+    <p class="muted">Прежние версии общих текстов, главной, разделов и контактов — копии, которые сохраняются при каждой публикации.
+      «Восстановить» кладёт версию в черновик: сайт не изменится, пока вы не нажмёте «Опубликовать» в редакторе.</p>
+  </div>
+  <a class="button" href="{{ url_for('admin.editor') }}">К редактору</a>
+</div>
+
+{%- if pending %}
+<p class="message message-error">Сейчас есть неопубликованный черновик. Восстановление версии заменит черновик этого файла.</p>
+{%- endif %}
+
+{%- if items %}
+<ul class="history-list">
+  {%- for item in items %}
+  <li>
+    <span class="history-when">{{ item.time.strftime("%d.%m.%Y %H:%M:%S") }}</span>
+    <span class="history-file">{{ item.file }}</span>
+    <a class="button button-small" href="{{ url_for('admin.editor_preview', version=item.name) }}" target="_blank" rel="noopener">Посмотреть</a>
+    <form method="post" action="{{ url_for('admin.editor_restore') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="version" value="{{ item.name }}">
+      <button class="button button-small" type="submit">Восстановить в черновик</button>
+    </form>
+  </li>
+  {%- endfor %}
+</ul>
+{%- else %}
+<p class="muted">Сохранённых версий пока нет.</p>
+{%- endif %}
+{% endblock %}

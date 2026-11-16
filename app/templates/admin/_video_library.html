@@ -1,0 +1,222 @@
+{#- Библиотека видеоотзывов в Редакторе (группа «Видеоотзывы»): добавить ролик (ссылка RuTube или файл MP4/WebM),
+    подписи, обложка, включить или выключить, порядок, удалить. Поля — часть формы Редактора: правки
+    уходят в черновик кнопкой «Сохранить черновик» или кнопками действий и попадают на сайт после
+    «Опубликовать». Добавление и обложки — сразу в черновик без перезагрузки (admin-videos.js);
+    без JS работает добавление по ссылке RuTube и всё остальное, кроме файлов и обложек. -#}
+
+{% macro play_icon() -%}
+<svg class="picker-video-play" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="23"/><path d="M20 16.5v15l12-7.5z"/></svg>
+{%- endmacro %}
+
+{#- Название и описание ролика (prefix — video.<id>) #}
+{% macro text_fields(prefix, values, lib) -%}
+{%- set fid = prefix|replace(".", "-") %}
+<label class="field">
+  <span>Название</span>
+  <input name="{{ prefix }}.title" value="{{ values.title }}" maxlength="{{ lib.title_max }}" aria-describedby="{{ fid }}-title-hint">
+  <small id="{{ fid }}-title-hint">Подпись под видео, например «Стенд для „Мебель-2026“». Пусто — подпись из поля «Подпись видео без названия».</small>
+</label>
+<label class="field">
+  <span>Короткое описание <small class="muted">— необязательно</small></span>
+  <textarea name="{{ prefix }}.description" rows="2" maxlength="{{ lib.description_max }}">{{ values.description }}</textarea>
+</label>
+{%- endmacro %}
+
+{#- Форма «+ Добавить видео» — одна и та же в группе «Видеоотзывы» и в окне выбора (admin-videos.js).
+    named — поля с name (группа: без JS ссылка RuTube добавляется обычным «Сохранить черновик»);
+    в окне выбора полей без name: форма Редактора их не отправляет. required нет нигде: обязательность
+    проверяют скрипт и сервер, иначе пустое скрытое поле блокировало бы отправку всей формы Редактора. #}
+{% macro video_adder(n, lib, named) -%}
+<div class="video-adder" data-video-adder data-add-url="{{ url_for('admin.video_add') }}" data-check-url="{{ url_for('admin.video_check') }}"
+     data-max-video="{{ lib.limits.video_bytes }}" data-max-image="{{ lib.limits.image_bytes }}" data-video-mb="{{ lib.limits.video_mb }}" data-image-mb="{{ lib.limits.image_mb }}">
+  <div class="segmented" role="group" aria-label="Откуда видео" data-adder-sources hidden>
+    <button class="segmented-item" type="button" aria-pressed="true" data-adder-source="rutube">Ссылка RuTube</button>
+    <button class="segmented-item" type="button" aria-pressed="false" data-adder-source="file">Файл с компьютера</button>
+  </div>
+
+  <div class="video-adder-pane" data-adder-pane="rutube">
+    <label class="field">
+      <span>Ссылка на видео RuTube <em>обязательно</em></span>
+      <input id="vadd-url-{{ n }}"{% if named %} name="video.new.url" value="{{ lib.new.url }}"{% endif %} maxlength="300" inputmode="url"
+             autocomplete="off" aria-required="true" placeholder="https://rutube.ru/video/…/" aria-describedby="vadd-url-hint-{{ n }}" data-adder-field="url">
+      <small id="vadd-url-hint-{{ n }}">Страница ролика (rutube.ru/video/…) или ссылка встраивания (rutube.ru/play/embed/…). Код iframe и ссылки других сервисов не подходят.</small>
+    </label>
+  </div>
+
+  <div class="video-adder-pane" data-adder-pane="file" hidden>
+    <div class="field">
+      <span id="vadd-file-label-{{ n }}">Видеофайл <em>обязательно</em></span>
+      <div class="file-pick">
+        <button class="button button-small" type="button" aria-describedby="vadd-file-label-{{ n }} vadd-file-hint-{{ n }}" data-adder-file-button>Выбрать файл…</button>
+        <span class="file-pick-name muted" data-adder-file-name>Файл не выбран</span>
+      </div>
+      <input type="file" accept="video/mp4,video/webm,.mp4,.m4v,.webm" hidden data-adder-file>
+      <small id="vadd-file-hint-{{ n }}">MP4 (H.264) или WebM, до {{ lib.limits.video_mb }} МБ. Файл хранится на сайте как есть, без пережатия. Видео MOV с iPhone сначала сохраните в MP4.</small>
+    </div>
+  </div>
+
+  <div class="video-adder-preview" data-adder-preview hidden></div>
+
+  <label class="field">
+    <span>Название</span>
+    <input{% if named %} name="video.new.title" value="{{ lib.new.title }}"{% endif %} maxlength="{{ lib.title_max }}" autocomplete="off" data-adder-field="title">
+  </label>
+  <label class="field">
+    <span>Короткое описание <small class="muted">— необязательно</small></span>
+    <textarea{% if named %} name="video.new.description"{% endif %} rows="2" maxlength="{{ lib.description_max }}" data-adder-field="description">{% if named %}{{ lib.new.description }}{% endif %}</textarea>
+  </label>
+
+  {#- Обложка: картинка с компьютера или (у файла) кадр из видео. Без JS блок не показывается #}
+  <fieldset class="cover-pick" data-cover-pick hidden>
+    <legend>Обложка</legend>
+    <div class="cover-pick-body">
+      <div class="cover-preview" data-cover-preview>
+        <img alt="Выбранная обложка" hidden data-cover-img>
+        <span class="cover-preview-empty" data-cover-empty>По умолчанию</span>
+      </div>
+      <div class="cover-pick-side">
+        <p class="cover-pick-note muted" data-cover-note>У ролика RuTube обложка по умолчанию — картинка с RuTube.</p>
+        <div class="cover-pick-actions">
+          <button class="button button-small" type="button" hidden data-cover-frame>Взять текущий кадр</button>
+          <button class="button button-small" type="button" data-cover-upload>Загрузить картинку…</button>
+          <button class="button button-small" type="button" hidden data-cover-clear>Убрать</button>
+        </div>
+        <input type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" hidden data-cover-file>
+        <small class="muted">JPG, PNG или WebP до {{ lib.limits.image_mb }} МБ, лучше 16:9. На сайте — до 1920 × 1080.</small>
+      </div>
+    </div>
+  </fieldset>
+
+  <div class="upload-progress" data-adder-progress hidden>
+    <progress max="100" value="0" aria-labelledby="vadd-progress-{{ n }}"></progress>
+    <span id="vadd-progress-{{ n }}" data-adder-progress-text>Загрузка…</span>
+  </div>
+  <p class="adder-message" role="status" data-adder-message hidden></p>
+  <div class="video-add-actions">
+    {#- В группе без JS — обычная отправка формы Редактора (только ссылка RuTube) #}
+    <button class="button button-small button-primary" type="{{ 'submit' if named else 'button' }}"{% if named %} name="video_action" value="add"{% endif %} data-adder-save>Сохранить видео</button>
+    <button class="button button-small" type="button" hidden data-adder-check>Показать видео</button>
+    <button class="button button-small" type="button" hidden data-adder-cancel>Отмена</button>
+    <button class="button button-small" type="button" hidden data-adder-abort>Остановить загрузку</button>
+  </div>
+</div>
+{%- endmacro %}
+
+{#- Карточка ролика в библиотеке. index и total — место в списке (стрелки порядка) #}
+{% macro video_row(row, lib, index, total) -%}
+<li class="vcard{% if not row.active %} is-off{% endif %}" id="v-{{ row.id }}" data-video-card data-id="{{ row.id }}" data-kind="{{ row.kind }}"
+    data-search="{{ row.name }} {{ row.description }} {{ row.source }}">
+  <div class="vcard-media">
+    {%- if row.thumb %}
+    <img src="{{ row.thumb }}" alt="" width="320" height="180" loading="lazy" decoding="async" data-vcard-img>
+    {%- else %}
+    {{ play_icon() }}
+    {%- endif %}
+    <span class="vcard-badge">{{ row.source }}</span>
+    {%- if row.position %}<span class="vcard-home">На главной, № {{ row.position }}</span>{% endif %}
+  </div>
+  <div class="vcard-body">
+    <strong class="vcard-title">{{ row.name }}</strong>
+    {%- if row.description %}<span class="vcard-text muted">{{ row.description }}</span>{% endif %}
+    <span class="video-tags">
+      {%- if not row.active %}<span class="tag">Выключено</span>{% endif %}
+      {%- if row.custom_cover %}<span class="tag" data-vcard-cover-tag>Своя обложка</span>
+      {%- elif not row.thumb %}<span class="tag" data-vcard-cover-tag>Без обложки</span>{% endif %}
+    </span>
+    <label class="checkbox vcard-toggle">
+      <input type="checkbox" name="video.{{ row.id }}.active" value="1"{% if row.active %} checked{% endif %}>
+      <span>Показывать на сайте</span>
+    </label>
+  </div>
+  <div class="vcard-actions">
+    <button class="button button-small" type="submit" name="video_action" value="up:{{ row.id }}" aria-label="Выше: {{ row.name }}"{% if index == 0 %} disabled{% endif %}>↑</button>
+    <button class="button button-small" type="submit" name="video_action" value="down:{{ row.id }}" aria-label="Ниже: {{ row.name }}"{% if index == total - 1 %} disabled{% endif %}>↓</button>
+    {%- if row.kind == "file" and row.file %}
+    <a class="button button-small" href="{{ row.file }}" target="_blank" rel="noopener" data-video-file="{{ row.file }}" aria-expanded="false">Смотреть</a>
+    {%- elif row.player %}
+    <a class="button button-small" href="{{ row.page }}" target="_blank" rel="noopener noreferrer" data-video-watch="{{ row.player }}" aria-expanded="false">Смотреть</a>
+    {%- endif %}
+    <button class="button button-small" type="button" hidden aria-expanded="false" aria-controls="v-{{ row.id }}-cover" data-cover-open>Обложка…</button>
+    {%- if lib.thumbs and row.kind == "rutube" and not row.rutube_thumb and not row.custom_cover %}
+    <button class="button button-small" type="submit" name="video_action" value="thumb:{{ row.id }}">Получить обложку</button>
+    {%- endif %}
+    <button class="button button-small button-danger-quiet" type="submit" name="video_action" value="delete:{{ row.id }}"
+            data-confirm="Удалить видео «{{ row.name }}» из библиотеки?{% if row.position %} Оно стоит на главной — его место займут следующие.{% endif %}{% if row.kind == 'file' %} Файл останется в истории версий.{% else %} Ролик на RuTube останется.{% endif %} Удаление попадёт в черновик; до публикации его можно отменить кнопкой «Отменить черновик».">Удалить…</button>
+  </div>
+  <p class="adder-message vcard-status" role="status" data-vcard-status hidden></p>
+  <div class="video-player-box" data-video-watch-box hidden></div>
+
+  {#- Обложка (admin-videos.js): картинка с компьютера, у файла — ещё и кадр из видео; сразу в черновик #}
+  <div class="vcard-cover" id="v-{{ row.id }}-cover" hidden data-cover-panel data-cover-url="{{ url_for('admin.video_cover') }}"
+       data-max-image="{{ lib.limits.image_bytes }}" data-image-mb="{{ lib.limits.image_mb }}">
+    <div class="cover-pick-body">
+      <div class="cover-preview" data-cover-preview>
+        <img alt="Выбранная обложка"{% if row.thumb %} src="{{ row.thumb }}"{% else %} hidden{% endif %} data-cover-img>
+        <span class="cover-preview-empty"{% if row.thumb %} hidden{% endif %} data-cover-empty>Без обложки</span>
+      </div>
+      <div class="cover-pick-side">
+        {%- if row.kind == "file" and row.file %}
+        <video class="cover-source" src="{{ row.file }}" controls preload="metadata" playsinline muted data-cover-video></video>
+        <p class="cover-pick-note muted">Поставьте видео на нужный момент и нажмите «Взять текущий кадр».</p>
+        {%- endif %}
+        <div class="cover-pick-actions">
+          {%- if row.kind == "file" and row.file %}
+          <button class="button button-small" type="button" data-cover-frame>Взять текущий кадр</button>
+          {%- endif %}
+          <button class="button button-small" type="button" data-cover-upload>Загрузить картинку…</button>
+          {%- if row.custom_cover %}
+          <button class="button button-small" type="button" data-cover-reset>{{ "Вернуть обложку RuTube" if row.kind == "rutube" else "Убрать свою обложку" }}</button>
+          {%- endif %}
+        </div>
+        <input type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" hidden data-cover-file>
+        <p class="adder-message" role="status" data-cover-message hidden></p>
+        <div class="video-add-actions">
+          <button class="button button-small button-primary" type="button" disabled data-cover-save>Сохранить обложку</button>
+          <button class="button button-small" type="button" data-cover-cancel>Отмена</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <details class="video-edit"{% if row.changed %} open{% endif %}>
+    <summary>Изменить подписи{% if row.kind == "rutube" %} и ссылку{% endif %}</summary>
+    {%- if row.kind == "rutube" %}
+    {%- set fid = "video-" ~ row.id %}
+    <label class="field">
+      <span>Ссылка на видео RuTube <em>обязательно</em></span>
+      <input name="video.{{ row.id }}.url" value="{{ row.url }}" maxlength="300" inputmode="url" autocomplete="off"
+             placeholder="https://rutube.ru/video/…/" aria-describedby="{{ fid }}-url-hint">
+      <small id="{{ fid }}-url-hint">Другая ссылка — другой ролик на том же месте, в том числе на главной.</small>
+    </label>
+    {%- endif %}
+    {{ text_fields("video." ~ row.id, row, lib) }}
+  </details>
+</li>
+{%- endmacro %}
+
+{% macro video_library(lib) -%}
+<section class="video-library" id="video-library" aria-labelledby="video-library-title">
+  <div class="vlib-head">
+    <h3 id="video-library-title">Все видео <span class="muted" data-vlib-count>({{ lib.rows|length }})</span></h3>
+  </div>
+  <p class="muted picker-help">Ссылка на RuTube или свой файл MP4/WebM. Изменения попадают в черновик: проверьте предпросмотр и нажмите «Опубликовать». Порядок — порядок в окне «Другие видео-отзывы».</p>
+
+  <details class="video-add" data-video-add{% if lib.add_open %} open{% endif %}>
+    <summary class="button button-small button-primary">+ Добавить видео</summary>
+    <div class="video-add-body">
+      {{ video_adder("lib", lib, true) }}
+    </div>
+  </details>
+
+  <div class="vlib-tools" data-vlib-tools hidden>
+    <input type="search" class="vlib-search" placeholder="Поиск по названию или описанию" aria-label="Поиск видео по названию или описанию" data-vlib-search>
+  </div>
+  <ol class="vlib-grid" data-video-list>
+    {%- for row in lib.rows %}
+    {{ video_row(row, lib, loop.index0, loop.length) }}
+    {%- endfor %}
+  </ol>
+  <p class="muted" data-vlib-empty{% if lib.rows %} hidden{% endif %}>Видео пока нет — добавьте первое кнопкой «+ Добавить видео».</p>
+  <p class="muted" data-vlib-nothing hidden>Ничего не найдено — измените поиск.</p>
+</section>
+{%- endmacro %}

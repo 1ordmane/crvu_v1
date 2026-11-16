@@ -1,0 +1,32 @@
+{#- Карточка видеоотзыва — в блоке «Нам доверяют свои проекты» и в шторке «Другие видео-отзывы».
+    До нажатия это ссылка на ролик (работает и без JS): на RuTube или на загруженный файл. main.js по
+    нажатию заменяет её плеером RuTube (адрес собран сервером из проверенного кода ролика, app/videos.py)
+    или элементом <video> с файлом сайта — страница не грузит ни плеер, ни видео, пока посетитель не выбрал ролик. -#}
+{#- mark — метка редактора (routes.edit_marker): в предпросмотре щелчок по карточке открывает окно выбора
+    видео, как карточка проекта в «Реализовано», а не плеер. На сайте пусто. #}
+{% macro video_card(v, section, mark="") -%}
+{#- Подписи — из блока reviews в home.json, с текстами по умолчанию #}
+{%- set t = {"caption": section.caption or "Видеоотзыв клиента", "play": section.play_label or "Смотреть видео",
+             "error": section.video_error or "Видео не загрузилось.", "open": section.video_open or "Открыть на RuTube"} %}
+{%- set file = v.video|media_url if v.kind == "file" else "" %}
+{%- set href = file or v.page %}
+<li class="review-card"{{ mark }}>
+  <div class="review-media is-video{% if v.thumb %} has-thumb{% endif %}" data-video>
+    <a class="review-play-link" href="{{ href }}" target="_blank" rel="noopener{% if not file %} noreferrer{% endif %}"
+       {% if file %}data-video-file="{{ file }}"{% if v.thumb %} data-video-poster="{{ v.thumb|media_url }}"{% endif %}{% else %}data-video-player="{{ v.player }}"{% endif %}
+       data-video-title="{{ v.title or t.caption }}" aria-label="{{ t.play }}: {{ v.title or t.caption }}">
+      {%- if v.thumb %}
+      {#- Обложка — своя картинка или копия картинки RuTube на сайте (app/videos.py), к RuTube страница за ней не ходит #}
+      <img class="review-thumb" src="{{ v.thumb|media_url }}" alt="" width="960" height="540" loading="lazy" decoding="async">
+      {%- endif %}
+      <svg class="review-play" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="23"/><path d="M20 16.5v15l12-7.5z"/></svg>
+      <span class="review-play-label">{{ t.play }}</span>
+    </a>
+    <p class="review-video-error" role="status" data-video-error hidden>{{ t.error }}{% if not file %} <a href="{{ v.page }}" target="_blank" rel="noopener noreferrer">{{ t.open }}</a>{% endif %}</p>
+  </div>
+  <p class="review-caption">{{ v.title or t.caption }}</p>
+  {%- if v.description %}
+  <p class="review-description">{{ v.description }}</p>
+  {%- endif %}
+</li>
+{%- endmacro %}

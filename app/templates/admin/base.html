@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{% block title %}Админ-панель{% endblock %} — ЦРВУ</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+  {%- block head %}{% endblock %}
+</head>
+<body{% block body_attrs %}{% endblock %}>
+  <header class="admin-header">
+    <a class="admin-brand" href="{{ url_for('admin.projects') }}">ЦРВУ <span>админ-панель</span></a>
+    {%- if is_admin() %}
+    <nav class="admin-nav" aria-label="Админ-панель">
+      <a href="{{ url_for('admin.projects') }}">Проекты</a>
+      <a href="{{ url_for('admin.requests_list') }}">Заявки</a>
+      <a href="{{ url_for('admin.exhibitions') }}">Выставки</a>
+      <a href="{{ url_for('admin.editor') }}">Редактор</a>
+      <a href="{{ url_for('main.index') }}" target="_blank" rel="noopener">Открыть сайт</a>
+      <form method="post" action="{{ url_for('admin.logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="link-button" type="submit">Выйти</button>
+      </form>
+    </nav>
+    {%- endif %}
+  </header>
+
+  <main class="admin-main" id="main">
+    {%- with messages = get_flashed_messages(with_categories=true) %}
+    {%- if messages %}
+    <div class="messages" role="status">
+      {%- for category, message in messages %}
+      <p class="message message-{{ category }}">{{ message }}</p>
+      {%- endfor %}
+    </div>
+    {%- endif %}
+    {%- endwith %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

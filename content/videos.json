@@ -1,0 +1,28 @@
+{
+  "videos": [
+    {
+      "id": "4ea90c06",
+      "rutube": "618892aeae5ece979ac78e89be3b4017",
+      "url": "https://rutube.ru/video/618892aeae5ece979ac78e89be3b4017/",
+      "title": "transrussia 2026. ATK",
+      "description": "",
+      "active": true
+    },
+    {
+      "id": "bed86ee3",
+      "rutube": "693eda25a0ff69ec36e6bdaf6cebfd00",
+      "url": "https://rutube.ru/video/693eda25a0ff69ec36e6bdaf6cebfd00/",
+      "title": "тест",
+      "description": "",
+      "active": true
+    },
+    {
+      "id": "55cd7c8d",
+      "rutube": "ffb9ed658e779e32e0890d71bb2421e9",
+      "url": "https://rutube.ru/video/ffb9ed658e779e32e0890d71bb2421e9/",
+      "title": "test2",
+      "description": "",
+      "active": true
+    }
+  ]
+}

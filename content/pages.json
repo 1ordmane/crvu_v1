@@ -1,0 +1,55 @@
+{
+  "_comment": "Разделы-шторки с собственным адресом (/slug) в порядке меню. type: portfolio, about, contacts, text. visible: false — раздел скрыт и недоступен по адресу.",
+  "pages": [
+    {
+      "slug": "portfolio",
+      "type": "portfolio",
+      "visible": true,
+      "title": "Портфолио",
+      "nav": "Портфолио",
+      "first_year": 2020
+    },
+    {
+      "slug": "about",
+      "type": "about",
+      "visible": true,
+      "title": "О нас",
+      "nav": "О нас",
+      "founded_year": 1999,
+      "paragraphs": [],
+      "stats_title": "Компания в цифрах",
+      "stats": [
+        {
+          "value": 5200,
+          "suffix": "+",
+          "label": "реализованных проектов"
+        },
+        {
+          "value": 182000,
+          "suffix": "+",
+          "label": "м² застроенной площади"
+        },
+        {
+          "value": 1748,
+          "suffix": "+",
+          "label": "клиентов, которые нам доверяют"
+        },
+        {
+          "value": 50,
+          "suffix": "+",
+          "label": "городов и стран, где мы работали"
+        }
+      ]
+    },
+    {
+      "slug": "contacts",
+      "type": "contacts",
+      "visible": true,
+      "title": "Контакты",
+      "nav": "Контакты",
+      "button": "Связаться с менеджером",
+      "empty": "Телефон, email и адрес офиса скоро появятся здесь.",
+      "socials_title": "Мы в соцсетях и мессенджерах"
+    }
+  ]
+}

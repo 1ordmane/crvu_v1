@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment and secrets
+.env
+.env.*
+instance/
+
+# Editors and OS
+.idea/
+.vscode/
+.DS_Store
+
+# Admin panel runtime files
+content/.history/
+content/.drafts/
+content/.cache/
+content/.lock
+
+# Local backups
+backup/
+
+# Content uploaded through the admin panel — data, not code (keep it out of Git; back it up separately):
+# photos for the site and camera originals with EXIF/GPS. The media/home instruction file stays tracked.
+content/media/*
+!content/media/home/
+content/media/home/*
+!content/media/home/README.txt
+content/originals/
+# Public photos and videos for GitHub Pages live in pages-media/ (tracked): exactly the files the published
+# site uses, listed in pages-media/MANIFEST.tsv — updated only by scripts/export_static.py --sync-media
+
+# Prepared photo sets for import (one folder per stand) — camera files with EXIF/GPS, kept out of Git;
+# back them up with scripts/backup-project-photos.sh
+project_photos/
+
+# Temporary files (atomic writes in content/, tool output)
+*.tmp
+.playwright-mcp/
+
+# Local Claude Code settings (per machine)
+.claude/settings.local.json
+
+# Site requests submitted through the Flask site (personal data) — never commit
+requests/
+
+# Generated artifacts: static export for GitHub Pages (scripts/export_static.py) and old single-file
+# snapshots of the site (tens of MB each, built from content that may be outdated)
+build/
+dist/
+/CRVU.html
+/ЦРВУ 2.0.html
+*.log

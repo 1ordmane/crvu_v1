@@ -1,0 +1,22 @@
+{% extends "admin/base.html" %}
+{% block title %}Вход{% endblock %}
+{% block content %}
+<section class="login-card" aria-labelledby="login-title">
+  <h1 id="login-title">Вход в админ-панель</h1>
+  {%- if error %}
+  <p class="message message-error" role="alert">{{ error }}</p>
+  {%- endif %}
+  <form method="post" action="{{ url_for('admin.login') }}" class="stack">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label class="field">
+      <span>Логин</span>
+      <input name="username" autocomplete="username" required maxlength="100" autofocus>
+    </label>
+    <label class="field">
+      <span>Пароль</span>
+      <input name="password" type="password" autocomplete="current-password" required maxlength="200">
+    </label>
+    <button class="button button-primary" type="submit">Войти</button>
+  </form>
+</section>
+{% endblock %}

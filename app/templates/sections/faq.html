@@ -1,0 +1,28 @@
+{#- «Частые вопросы» — последний блок главной, сразу перед подвалом «Обсудим ваш следующий проект».
+    Вопросы и ответы — items в home.json (правятся в «Редакторе»). Аккордеон: вся строка вопроса —
+    кнопка; открыт не больше одного ответа (main.js, initFaq). Без скрипта ответы видны: скрывает их
+    только класс is-ready, который ставит скрипт (style.css) #}
+  <section class="section faq is-paper" id="{{ section.id }}" aria-labelledby="{{ section.id }}-title">
+    <div class="container faq-layout">
+      <div class="section-head">
+        <h2 class="section-title" id="{{ section.id }}-title" data-reveal{{ edit(section, "title") }}>{{ section.title or "Частые вопросы" }}</h2>
+        {%- if section.lead %}
+        <p class="section-lead" data-reveal{{ edit(section, "lead") }}>{{ section.lead }}</p>
+        {%- endif %}
+      </div>
+      <ul class="faq-list" data-faq>
+        {%- for item in section.get("items", []) %}
+        {%- set n = loop.index %}
+        <li class="faq-item">
+          <h3 class="faq-q"><button class="faq-toggle" type="button" id="{{ section.id }}-q-{{ n }}" aria-expanded="false" aria-controls="{{ section.id }}-a-{{ n }}" data-faq-toggle>
+            <span class="faq-question"{{ edit(section, "items", loop.index0, "question") }}>{{ item.question }}</span>
+            <span class="faq-icon" aria-hidden="true"></span>
+          </button></h3>
+          <div class="faq-a" id="{{ section.id }}-a-{{ n }}" role="region" aria-labelledby="{{ section.id }}-q-{{ n }}" data-faq-answer>
+            <div class="faq-a-inner"><p{{ edit(section, "items", loop.index0, "answer") }}>{{ item.answer }}</p></div>
+          </div>
+        </li>
+        {%- endfor %}
+      </ul>
+    </div>
+  </section>

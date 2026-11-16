@@ -1,0 +1,49 @@
+{% extends "admin/base.html" %}
+{% block title %}Заявки{% endblock %}
+{%- macro num(n) %}{{ ("%g" % n)|replace(".", ",") }}{% endmacro %}
+{%- macro rub(n) %}{{ "{:,}".format(n)|replace(",", " ") }}{% endmacro %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Заявки</h1>
+    <p class="muted">Заявки «Заказать дизайн-проект» из конфигуратора на главной — новые первыми.
+      Контакт и параметры стенда клиент выбрал сам; свяжитесь с ним, чтобы обсудить проект.</p>
+  </div>
+</div>
+
+{%- if items %}
+<ol class="request-list">
+  {%- for item in items %}
+  {%- set stand = item.stand or {} %}
+  <li class="panel request-item">
+    <p class="request-head">
+      <a class="request-contact" href="{{ item.href }}">{{ item.contact }}</a>
+      <span class="muted">{{ "почта" if item.contact_type == "email" else "телефон" }}{% if item.when %} · {{ item.when }}{% endif %}</span>
+    </p>
+    <dl class="request-stand">
+      <div><dt>Размер</dt><dd>{{ num(stand.length) }} × {{ num(stand.width) }} м</dd></div>
+      <div><dt>Площадь</dt><dd>{{ num(stand.area) }} м²</dd></div>
+      <div><dt>Тип</dt><dd>{{ stand.type }}{% if stand.open_sides is not none %}, открытых сторон: {{ stand.open_sides }}{% endif %}</dd></div>
+      {#- Уровень, опции и ориентир — из калькулятора; в старых заявках их нет. Ориентир посчитан
+          в браузере клиента по формуле сайта — это пометка, а не цена #}
+      {%- if stand.level %}
+      <div><dt>Уровень</dt><dd>{{ stand.level }}</dd></div>
+      <div><dt>Опции</dt><dd>{{ stand.extras|join(", ") if stand.extras else "нет" }}</dd></div>
+      {%- endif %}
+      {%- if stand.estimate %}
+      <div><dt>Ориентир</dt><dd>{% if stand.estimate.max %}{{ rub(stand.estimate.min) }} – {{ rub(stand.estimate.max) }}{% else %}от {{ rub(stand.estimate.min) }}{% endif %} ₽ <span class="muted">(ориентир с сайта)</span></dd></div>
+      {%- endif %}
+      {%- if stand.budget or not stand.estimate %}
+      <div><dt>Бюджет</dt><dd>{% if stand.budget %}{{ rub(stand.budget) }} ₽{% else %}не указан{% endif %}</dd></div>
+      {%- endif %}
+    </dl>
+    <p class="request-actions">
+      <a class="button button-small button-danger-quiet" href="{{ url_for('admin.delete_request', name=item.file) }}" aria-label="Удалить заявку от {{ item.contact }}…">Удалить…</a>
+    </p>
+  </li>
+  {%- endfor %}
+</ol>
+{%- else %}
+<p class="empty panel">Заявок пока нет. Они появятся здесь после отправки формы «Заказать дизайн-проект» на главной.</p>
+{%- endif %}
+{% endblock %}

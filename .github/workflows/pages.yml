@@ -1,0 +1,63 @@
+# Статическая сборка публичного сайта CRVU → GitHub Pages (инструкция — GITHUB_PAGES.md).
+# Запуск вручную: Actions → «GitHub Pages» → Run workflow. Публикуется только build/pages —
+# результат scripts/export_static.py; Flask-админка, черновики, история и заявки туда не попадают.
+name: GitHub Pages
+
+on:
+  workflow_dispatch:
+  # Публиковать при каждом push в main — раскомментировать, когда Pages настроены (GITHUB_PAGES.md):
+  # push:
+  #   branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # base_path — адрес сайта от корня домена: /имя-репозитория для https://<user>.github.io/<repo>/,
+      # пусто для <user>.github.io и своего домена
+      - id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Build static site
+        env:
+          # Адрес приёма заявок конфигуратора (необязательно): Settings → Secrets and variables →
+          # Actions → Variables → CRVU_FORM_ENDPOINT. Не задан — форма отсылает к контактам
+          CRVU_FORM_ENDPOINT: ${{ vars.CRVU_FORM_ENDPOINT }}
+        # Фото и видео — только из pages-media/ (хранится в Git, список — pages-media/MANIFEST.tsv):
+        # content/media/ в репозитории нет. Сборка остановится, если файлы не совпадают со списком
+        # или опубликованный проект ссылается на файл не из списка
+        run: >-
+          python scripts/export_static.py --out build/pages --media-dir pages-media
+          --base-path "${{ steps.pages.outputs.base_path }}"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/pages
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

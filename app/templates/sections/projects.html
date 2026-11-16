@@ -1,0 +1,87 @@
+{#- Реализованные проекты — первый блок после сцены, на светлой «бумаге». Карточки собирает
+    portfolio.featured_cards: из проекта портфолио (items[].project) и/или своих полей
+    title, event, area, place, image. Без фото — временная заглушка (только при CRVU_SHOW_PLACEHOLDERS=1).
+    Раскладка — одна лента: на компьютере все карточки в ряд, на телефоне листается вбок (style.css). #}
+{%- set portfolio_page = pages|selectattr("type", "equalto", "portfolio")|first %}
+{%- set t = {
+  "more": section.more or "Подробнее",
+  "placeholder": section.placeholder_label or "Временная заглушка",
+  "placeholder_title": section.placeholder_title or "Название проекта",
+  "area": section.area_label or "Площадь",
+  "photos": (portfolio_page.photo_count if portfolio_page and portfolio_page.photo_count else "{n} фото"),
+  "video": ui.video_badge or "Есть видео",
+} %}
+{#- Число опубликованных проектов — для ссылки «Все проекты»: считается из портфолио, а не пишется вручную #}
+{%- set total = namespace(n=0) %}
+{%- for y in years %}{% for g in y.groups %}{% set total.n = total.n + g.stands|length %}{% endfor %}{% endfor %}
+  <section class="section projects is-paper" id="{{ section.id }}" aria-labelledby="{{ section.id }}-title">
+    <div class="container">
+      <div class="projects-head">
+        <div>
+          <h2 class="section-title" id="{{ section.id }}-title"{{ edit(section, "title") }}>{{ section.title }}</h2>
+          {%- if section.lead %}
+          <p class="section-lead"{{ edit(section, "lead") }}>{{ section.lead }}</p>
+          {%- endif %}
+        </div>
+        {%- if section.button and section.button_page in pages|map(attribute="slug")|list %}
+        <a class="projects-all" href="{{ url_for('main.page', slug=section.button_page) }}" data-route="{{ section.button_page }}"{{ edit(section, "button") }}>{{ section.button }}{% if total.n %} <span class="projects-count">{{ total.n }}</span>{% endif %}</a>
+        {%- endif %}
+      </div>
+      <ul class="project-grid">
+        {%- for card in featured[section.id] %}
+        {%- set event = [card.event, card.year|string if card.year else ""]|select|join(" ") %}
+        <li class="project-card{% if card.placeholder %} is-placeholder{% endif %}"{{ edit(section, "items") }}>
+          {%- if card.project %}
+          {%- set urls = card.photos|map("media_src", 1920)|list %}
+          {%- set thumbs = card.photos|map("media_src", 640)|list %}
+          {%- set srcsets = card.photos|map("media_srcset")|list %}
+          {%- set srcset = card.photos[0]|media_srcset %}
+          {#- Имя кнопки — вся подпись: название, выставка, площадь, планировка, число фото #}
+          <button class="project-open" type="button"
+                  data-gallery='{{ {"title": card.project.title, "meta": card.project.meta, "description": card.project.description, "specs": card.project.specs, "images": urls, "thumbs": thumbs, "srcsets": srcsets, "video": card.project.video, "vimeo": card.project.vimeo}|tojson }}'>
+            <span class="project-media">
+              <img src="{{ card.photos[0]|media_src(1280) }}"{% if srcset %} srcset="{{ srcset }}" sizes="(min-width: 1200px) 19rem, min(80vw, 22rem)"{% endif %} alt="{{ card.title }}" width="1200" height="800" loading="lazy" decoding="async">
+            </span>
+            <span class="project-body">
+              {#- Главное в подписи — выставка; компания, площадь и планировка — строкой фактов под ней #}
+              {%- if event %}
+              <span class="project-event">{{ event }}</span>
+              {%- endif %}
+              <span class="project-facts">
+                <span class="project-title">{{ card.title }}</span>
+                {%- if card.area %}<span>{{ card.area }}</span>{% endif %}
+                {%- if card.layout %}<span>{{ card.layout }}</span>{% endif %}
+              </span>
+              <span class="project-more">{{ t.photos|replace("{n}", card.photo_count|string) }}{% if card.has_video %}<span class="project-video"><span class="play-icon" aria-hidden="true"></span>{{ t.video }}</span>{% endif %}</span>
+            </span>
+          </button>
+          {%- else %}
+          <div class="project-media">
+            {%- if card.photos %}
+            {%- set srcset = card.photos[0]|media_srcset %}
+            <img src="{{ card.photos[0]|media_src(1280) }}"{% if srcset %} srcset="{{ srcset }}" sizes="(min-width: 1200px) 19rem, min(80vw, 22rem)"{% endif %} alt="{{ card.title }}" width="1200" height="800" loading="lazy" decoding="async">
+            {%- else %}
+            <span class="project-placeholder">{{ t.placeholder }}</span>
+            {%- endif %}
+          </div>
+          <div class="project-body">
+            {%- if card.event %}
+            <p class="project-event">{{ card.event }}</p>
+            {%- endif %}
+            <h3 class="project-title{% if not card.title %} is-empty{% endif %}">{{ card.title or t.placeholder_title }}</h3>
+            {%- if card.place or card.area %}
+            <p class="project-facts">
+              {%- if card.place %}<span>{{ card.place }}</span>{% endif %}
+              {%- if card.area %}<span>{{ t.area }}: {{ card.area }}</span>{% endif %}
+            </p>
+            {%- endif %}
+            {%- if portfolio_page %}
+            <a class="project-more" href="{{ url_for('main.page', slug=portfolio_page.slug) }}" data-route="{{ portfolio_page.slug }}">{{ t.more }}</a>
+            {%- endif %}
+          </div>
+          {%- endif %}
+        </li>
+        {%- endfor %}
+      </ul>
+    </div>
+  </section>

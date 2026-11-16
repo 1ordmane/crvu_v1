@@ -1,0 +1,204 @@
+{#- Размер стенда — длина × ширина от 1 м с точностью до сотых (ввод через запятую или точку),
+    кнопки меняют сторону на 0,5 м; одна клетка плана = 1 × 1 м.
+    Пределы — из area.min / area.max: площадь не выходит за них. Расчёт плана — static/js/stand-plan.js.
+    Типы — из section.types; тип с deck (второй этаж) и список options в конфигураторе больше не
+    используются: записи в home.json остаются, но на сайт не выводятся.
+    Ориентир бюджета — из section.pricing (уровни, опции, параметры формулы); считает его
+    static/js/stand-price.js. Без pricing блока ориентира, уровней и опций нет. #}
+{%- set pricing = section.pricing if section.pricing is mapping else none %}
+{%- set levels = (pricing.levels if pricing and pricing.levels is sequence else [])|select("mapping")|list %}
+{%- set extras = (pricing.extras if pricing and pricing.extras is sequence else [])|select("mapping")|list %}
+{%- set area = section.area or {} %}
+{%- set area_min, area_max = area.min or 9, area.max or 300 %}
+{%- set side = [[((area.default or area_min) ** 0.5)|round|int, 1]|max, area_max]|min %}
+{%- set dims = {"length": side, "width": side} %}
+{%- set t = {
+  "size": section.size_label or "Размер стенда",
+  "length": section.length_label or "Длина",
+  "width": section.width_label or "Ширина",
+  "area": section.area_label or "Площадь",
+  "decrease": section.decrease_label or "Уменьшить",
+  "increase": section.increase_label or "Увеличить",
+  "type": section.type_label or "Тип стенда",
+  "level": section.level_label or "Уровень сложности",
+  "more": section.extras_label or "Дополнительные опции",
+  "more_hint": section.extras_hint or "по желанию",
+  "result": section.result_title or "Ориентировочный бюджет",
+  "result_area": section.result_area or "Площадь",
+  "result_config": section.result_config or "Конфигурация",
+  "result_rate": section.result_rate or "За м²",
+  "result_total": section.result_total or "Итого",
+  "note": section.estimate_note or "Предварительный ориентир, не коммерческое предложение. Итоговая стоимость зависит от утверждённого дизайна, материалов, сложности конструкции и объёма работ. Аренда площади, сборы организатора, подключение электричества, воды и интернета, подвесные точки и другие расходы площадки оплачиваются отдельно.",
+  "scale": section.plan_scale or "1 клетка = 1 × 1 м",
+} %}
+{%- set js_texts = {
+  "summary": section.summary_text or "{type} стенд, {length} × {width} м, {area} м²",
+  "budget": section.budget_summary or "Бюджет: {budget} ₽",
+  "request": section.request_intro or "Хочу дизайн-проект стенда:",
+  "caption": section.plan_caption or "Вид сверху: {type} стенд",
+  "open": section.open_sides or "открытых сторон: {n}",
+  "min_hint": section.min_size_hint or "Минимальный размер — 1 м",
+  "format_hint": section.size_format_hint or "Введите число, например 2,5",
+  "area_value": section.result_area_value or "{area} м² ({length} × {width} м)",
+  "config": section.result_config_value or "{type}, {level}",
+  "level_line": section.level_summary or "Уровень: {level}",
+  "extras_line": section.extras_summary or "Опции: {extras}",
+  "estimate_line": section.estimate_summary or "Ориентир бюджета: {range} (предварительно)",
+  "engineering": section.engineering_note or "{names}: нужен инженерный расчёт, поэтому показана только нижняя граница.",
+  "open_ended": section.open_ended_note or "Для этого уровня верхнюю границу определяет проект.",
+  "more_count": section.extras_count or "выбрано: {n}",
+} %}
+  <section class="section configurator is-paper" id="{{ section.id }}" aria-labelledby="{{ section.id }}-title">
+    <div class="container cfg-layout">
+      <div class="cfg-intro">
+        <div class="section-head">
+          <h2 class="section-title" id="{{ section.id }}-title" data-reveal{{ edit(section, "title") }}>{{ section.title }}</h2>
+          {%- if section.lead %}
+          <p class="section-lead" data-reveal{{ edit(section, "lead") }}>{{ section.lead }}</p>
+          {%- endif %}
+        </div>
+        <figure class="cfg-plan" aria-hidden="true" data-reveal>
+          <svg viewBox="0 0 320 240" data-plan>
+            <rect class="plan-floor" data-plan-floor x="0" y="0" width="0" height="0"/>
+            <path class="plan-grid" data-plan-grid d=""/>
+            <path class="plan-wall" data-plan-walls d=""/>
+            <text class="plan-size" data-plan-length text-anchor="middle" x="160" y="230"></text>
+            <text class="plan-size" data-plan-width text-anchor="middle" x="310" y="120"></text>
+            <text class="plan-scale" x="12" y="18">{{ t.scale }}</text>
+          </svg>
+          <figcaption class="cfg-plan-caption" data-plan-caption{{ edit(section, "plan_caption") }}>{{ section.plan_label or "Вид сверху" }}</figcaption>
+        </figure>
+      </div>
+
+      <form class="cfg-form" data-configurator data-texts='{{ js_texts|tojson }}'{% if pricing and levels %} data-pricing='{{ pricing|tojson }}'{% endif %} data-reveal>
+        <fieldset class="field cfg-size" data-area-min="{{ area_min }}" data-area-max="{{ area_max }}">
+          <legend{{ edit(section, "size_label") }}>{{ t.size }}</legend>
+          {%- for name in ("length", "width") %}
+          <div class="cfg-dim">
+            <label for="cfg-{{ name }}"{{ edit(section, name ~ "_label") }}>{{ t[name] }}</label>
+            <div class="stepper">
+              <button class="stepper-btn" type="button" data-step="-1" data-side="{{ name }}" aria-controls="cfg-{{ name }}" aria-label="{{ t.decrease }}: {{ t[name]|lower }}">−</button>
+              <input class="stepper-input" type="text" id="cfg-{{ name }}" name="{{ name }}" inputmode="decimal" autocomplete="off" aria-describedby="cfg-size-hint" value="{{ dims[name] }}" required>
+              <span class="stepper-unit" aria-hidden="true">м</span>
+              <button class="stepper-btn" type="button" data-step="1" data-side="{{ name }}" aria-controls="cfg-{{ name }}" aria-label="{{ t.increase }}: {{ t[name]|lower }}">+</button>
+            </div>
+          </div>
+          {%- endfor %}
+          <p class="cfg-dim cfg-area">
+            <span{{ edit(section, "area_label") }}>{{ t.area }}</span>
+            <output class="cfg-area-value" for="cfg-length cfg-width" data-area-output>{{ dims.length * dims.width }} м²</output>
+          </p>
+          <p class="cfg-hint" id="cfg-size-hint" aria-live="polite" data-size-hint></p>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend{{ edit(section, "type_label") }}>{{ t.type }}</legend>
+          <div class="chips cfg-types">
+            {#- edit — по номеру типа в home.json, поэтому номер берётся из полного списка #}
+            {%- set all_types = section.get("types", []) %}
+            {%- for type in all_types|rejectattr("deck") %}
+            <label class="chip"><input type="radio" name="type" value="{{ type.name }}" data-walls="{{ type.get('walls', [])|join(' ') }}"{% if loop.first %} checked{% endif %}><span{{ edit(section, "types", all_types.index(type), "name") }}>{{ type.name }}</span></label>
+            {%- endfor %}
+          </div>
+        </fieldset>
+
+        {%- if pricing and levels %}
+        {#- Уровень сложности: описание выбранного — строкой под кнопками (main.js меняет её при выборе) #}
+        <fieldset class="field">
+          <legend{{ edit(section, "level_label") }}>{{ t.level }}</legend>
+          <div class="chips cfg-levels">
+            {%- for lv in levels %}
+            <label class="chip"><input type="radio" name="level" value="{{ lv.id }}" data-text="{{ lv.text or '' }}" aria-describedby="cfg-level-text"{% if loop.first %} checked{% endif %}><span{{ edit(section, "pricing", "levels", loop.index0, "name") }}>{{ lv.name }}</span></label>
+            {%- endfor %}
+          </div>
+          <p class="cfg-level-text" id="cfg-level-text" data-level-text>{{ levels[0].text or "" }}</p>
+        </fieldset>
+
+        {%- if extras %}
+        {#- Опции, заметно меняющие бюджет, — в свёрнутом блоке: по умолчанию расчёт простой #}
+        <details class="cfg-more" data-more>
+          <summary class="cfg-more-summary"><span id="cfg-more-title"{{ edit(section, "extras_label") }}>{{ t.more }}</span> <span class="field-optional" data-more-count>{{ t.more_hint }}</span></summary>
+          <fieldset class="field cfg-more-body" aria-labelledby="cfg-more-title">
+            <div class="chips cfg-extras">
+              {%- for e in extras %}
+              <label class="chip chip-check"><input type="checkbox" name="extras" value="{{ e.id }}"><span{{ edit(section, "pricing", "extras", loop.index0, "name") }}>{{ e.name }}</span></label>
+              {%- endfor %}
+            </div>
+          </fieldset>
+        </details>
+        {%- endif %}
+
+        {#- Ориентир: заполняет main.js по stand-price.js; без скрипта блок скрыт — цифр без расчёта нет #}
+        <div class="cfg-result" data-estimate aria-labelledby="cfg-result-title" role="group" hidden>
+          <h3 class="cfg-result-title" id="cfg-result-title"{{ edit(section, "result_title") }}>{{ t.result }}</h3>
+          <dl class="cfg-result-list">
+            <div><dt{{ edit(section, "result_area") }}>{{ t.result_area }}</dt><dd data-est-area></dd></div>
+            <div><dt{{ edit(section, "result_config") }}>{{ t.result_config }}</dt><dd data-est-config></dd></div>
+            <div><dt{{ edit(section, "result_rate") }}>{{ t.result_rate }}</dt><dd data-est-rate></dd></div>
+          </dl>
+          <p class="cfg-total"><span{{ edit(section, "result_total") }}>{{ t.result_total }}</span> <output class="cfg-total-value" data-est-total aria-live="polite"></output></p>
+          <p class="cfg-warning" data-est-warning hidden></p>
+          <p class="cfg-note" data-est-notes{{ edit(section, "estimate_note") }}>{{ t.note }}</p>
+        </div>
+        {%- endif %}
+
+        <div class="cfg-submit">
+          <button class="btn btn-primary btn-lg" type="submit"{{ edit(section, "submit") }}>{{ section.submit or "Обсудить проект" }}</button>
+          <p class="cfg-submit-note"{{ edit(section, "submit_note") }}>{{ section.submit_note or "Обсудим вашу задачу и подготовим проект с учётом ваших пожеланий и бюджета." }}</p>
+        </div>
+      </form>
+    </div>
+
+    {#- Заявка на дизайн-проект: одно обязательное поле — телефон или email. Параметры стенда берутся
+        из конфигуратора в момент отправки (main.js), сервер проверяет их заново (leads.py) и сохраняет
+        заявку для менеджера (админка → «Заявки»). Поле website — ловушка для ботов, людям не видно #}
+    {%- set rq = section.request or {} %}
+    {%- set dr_texts = {
+      "empty": rq.error_empty or "Укажите телефон или электронную почту.",
+      "email": rq.error_email or "Проверьте адрес почты — например, name@company.ru.",
+      "phone": rq.error_phone or "Проверьте номер: от 7 до 15 цифр, можно с «+», пробелами, скобками и дефисами.",
+      "long": rq.error_long or "Слишком длинно — не больше 100 символов.",
+      "sending": rq.sending or "Отправляем…",
+      "failed": rq.error_server or "Заявка не отправлена: сервер не ответил. Ваши данные сохранены в форме — попробуйте ещё раз.",
+      "offline": rq.error_network or "Нет связи с сервером. Ваши данные сохранены в форме — проверьте интернет и попробуйте ещё раз.",
+      "unavailable": rq.error_unavailable or "Заявка не отправлена: онлайн-отправка на этой версии сайта не работает. Позвоните или напишите нам — контакты в конце страницы и в кнопке «Связаться».",
+    } %}
+    {#- Куда отправлять: на Flask-сервере — сюда же; в статической сборке (GitHub Pages) — внешний адрес
+        из настройки, а без него data-action нет: main.js не отправляет и показывает «unavailable» #}
+    {%- set dr_action = config.DESIGN_REQUEST_ENDPOINT if config.STATIC_EXPORT else url_for('main.design_request') %}
+    <dialog class="modal design-request" id="design-request" aria-labelledby="dr-title">
+      <form class="request-form" data-design-request{% if dr_action %} data-action="{{ dr_action }}"{% endif %} data-texts='{{ dr_texts|tojson }}' novalidate>
+        <div class="dr-step" data-dr-step="form">
+          <h2 class="modal-title" id="dr-title"{{ edit(section, "request", "title") }}>{{ rq.title or "Обсудим ваш проект" }}</h2>
+          <p class="modal-lead"{{ edit(section, "request", "lead") }}>{{ rq.lead or "Оставьте контакты, и наш менеджер свяжется с вами." }}</p>
+          <p class="dr-summary" data-dr-summary></p>
+          {%- if not dr_action %}
+          <p class="form-note" data-dr-unavailable>{{ rq.note_unavailable or "Онлайн-отправка заявок на этой версии сайта не работает. Позвоните или напишите нам — контакты в конце страницы и в кнопке «Связаться»." }}</p>
+          {%- endif %}
+          <div class="field">
+            <label for="dr-contact">{{ rq.contact_label or "Телефон или электронная почта" }}</label>
+            <input id="dr-contact" name="contact" maxlength="100" autocomplete="on" required
+                   placeholder="{{ rq.contact_placeholder or 'Введите телефон или email' }}" aria-describedby="dr-contact-hint dr-contact-error">
+            <p class="form-hint" id="dr-contact-hint">{{ rq.contact_hint or "Укажите любой удобный способ связи." }}</p>
+            <p class="field-error" id="dr-contact-error" data-dr-error hidden></p>
+          </div>
+          <div class="dr-trap" aria-hidden="true">
+            <label for="dr-website">Сайт</label>
+            <input id="dr-website" name="website" tabindex="-1" autocomplete="off">
+          </div>
+          <p class="form-status" role="alert" data-dr-status hidden></p>
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit" data-dr-submit>{{ rq.submit or "Отправить заявку" }}</button>
+            <button class="btn btn-quiet" type="button" data-close-dialog>{{ rq.cancel or "Отмена" }}</button>
+          </div>
+        </div>
+        <div class="dr-step" data-dr-step="done" hidden>
+          <h2 class="modal-title" id="dr-done-title" tabindex="-1">{{ rq.success_title or "Спасибо за заявку!" }}</h2>
+          <p class="modal-lead">{{ rq.success_text or "Мы получили параметры вашего стенда и скоро свяжемся с вами для обсуждения проекта." }}</p>
+          <div class="form-actions">
+            <button class="btn btn-primary" type="button" data-close-dialog>{{ rq.close or "Закрыть" }}</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+  </section>

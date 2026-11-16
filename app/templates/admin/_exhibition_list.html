@@ -1,0 +1,7 @@
+{#- Подсказки для поля «Выставка»: название и годы, в которые она уже была (label). Выбор той же выставки
+    в том же году не создаёт дубль; тот же год и новое название или другой год — новое событие. #}
+<datalist id="exhibition-list">
+  {%- for name, years in exhibition_options %}
+  <option value="{{ name }}" label="{{ years }}"></option>
+  {%- endfor %}
+</datalist>

@@ -1,0 +1,116 @@
+    {#- Фильтры: классификацию (планировка, диапазон площади, этажность) делает сервер — у каждой карточки
+        data-layout / data-area / data-floors; static/js/portfolio-filter.js только сравнивает с выбранным.
+        Без скрипта кнопка и панель скрыты и видны все стенды. Панель свёрнута, пока не нажата «Фильтры»
+        (aria-expanded / aria-controls; свёрнутая — hidden, места не занимает). #}
+    {%- set pf = portfolio_filters %}
+    {%- if years %}
+    <div class="pf-bar" data-pf-bar hidden>
+      <button class="pf-toggle" type="button" aria-expanded="false" aria-controls="pf-panel" data-pf-toggle>
+        <svg class="pf-toggle-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M6 10h8M8.5 15h3"/></svg>
+        <span>{{ page.filters_button or "Фильтры" }}</span>
+        <span class="pf-badge" data-pf-badge hidden></span>
+      </button>
+    </div>
+    <div class="pf-collapse" id="pf-panel" data-pf-panel hidden>
+    <div class="pf-collapse-inner">
+    <form class="pf-filters" aria-label="{{ page.filters_label or "Фильтры стендов" }}" data-pf-filters
+          data-pf-texts='{{ {"found": page.filters_found or "Найдено стендов: {n}"}|tojson }}'>
+      {#- Строка группы: подпись слева, переключатели справа. Первая кнопка — пустое значение («Все»,
+          «Любая»): скрипт считает его «фильтр не выбран» и сам отмечает выбранное (aria-pressed) #}
+      <div class="pf-group" role="group" aria-labelledby="pf-layout">
+        <p class="pf-title" id="pf-layout">{{ page.filter_layout or "Планировка" }}</p>
+        <div class="pf-options">
+          <button class="pf-option" type="button" data-pf-key="layout" data-pf-value="" aria-pressed="true">{{ page.filter_layout_any or "Все" }}</button>
+          {%- for name, walls in pf.layouts %}
+          <button class="pf-option" type="button" data-pf-key="layout" data-pf-value="{{ name }}" aria-pressed="false">
+            <svg class="pf-icon" viewBox="0 0 20 14" aria-hidden="true">
+              <rect class="pf-icon-floor" x="2" y="2" width="16" height="10"/>
+              {%- if "back" in walls %}<path class="pf-icon-wall" d="M2 2H18"/>{% endif %}
+              {%- if "left" in walls %}<path class="pf-icon-wall" d="M2 2V12"/>{% endif %}
+              {%- if "right" in walls %}<path class="pf-icon-wall" d="M18 2V12"/>{% endif %}
+            </svg>{{ name }}
+          </button>
+          {%- endfor %}
+        </div>
+      </div>
+      <div class="pf-group" role="group" aria-labelledby="pf-area">
+        <p class="pf-title" id="pf-area">{{ page.filter_area or "Площадь" }}</p>
+        <div class="pf-options">
+          <button class="pf-option" type="button" data-pf-key="area" data-pf-value="" aria-pressed="true">{{ page.filter_area_any or "Любая площадь" }}</button>
+          {%- for key, _, _, label, _ in pf.areas %}
+          <button class="pf-option pf-num" type="button" data-pf-key="area" data-pf-value="{{ key }}" aria-pressed="false">{{ label }}</button>
+          {%- endfor %}
+        </div>
+      </div>
+      <div class="pf-group" role="group" aria-labelledby="pf-floors">
+        <p class="pf-title" id="pf-floors">{{ page.filter_floors or "Этажность" }}</p>
+        <div class="pf-options">
+          <button class="pf-option" type="button" data-pf-key="floors" data-pf-value="" aria-pressed="true">{{ page.filter_floors_any or "Любая" }}</button>
+          {%- for value, name in pf.floors.items() %}
+          <button class="pf-option" type="button" data-pf-key="floors" data-pf-value="{{ value }}" aria-pressed="false">{{ name }}</button>
+          {%- endfor %}
+        </div>
+      </div>
+      <div class="pf-footer">
+        <p class="pf-summary" aria-live="polite" data-pf-summary></p>
+        <button class="pf-reset" type="button" data-pf-reset hidden>{{ page.filters_reset or "Сбросить фильтры" }}</button>
+      </div>
+    </form>
+    </div>
+    </div>
+    {%- endif %}
+
+    <div class="year-tabs" role="tablist" aria-label="{{ page.tabs_label or "Год проекта" }}" data-year-tabs>
+      {%- for y in years %}
+      <button class="year-tab" type="button" role="tab" id="tab-{{ y.year }}" aria-controls="year-{{ y.year }}"
+              aria-selected="{{ 'true' if loop.first else 'false' }}"{% if not loop.first %} tabindex="-1"{% endif %}>
+        {{ y.year }}{% if y.count %} <span class="year-count">{{ y.count }}</span>{% endif %}
+      </button>
+      {%- endfor %}
+    </div>
+
+    {%- for y in years %}
+    <div class="year-panel" role="tabpanel" id="year-{{ y.year }}" aria-labelledby="tab-{{ y.year }}"{% if not loop.first %} hidden{% endif %}>
+      <div class="pf-empty" data-pf-empty hidden>
+        <p>{{ page.filters_empty or "По выбранным параметрам стенды не найдены" }}</p>
+        <button class="pf-reset" type="button" data-pf-reset>{{ page.filters_reset or "Сбросить фильтры" }}</button>
+      </div>
+      {%- for group in y.groups %}
+      <section class="exhibition">
+        <h3 class="exhibition-title">{{ group.name }} <span class="exhibition-count">{{ group.stands|length }}</span></h3>
+        <ul class="stand-grid">
+          {%- for s in group.stands %}
+          {#- Галерея: большое фото — srcset из версий 640/1280/1920 (src — 1920 px), лента миниатюр — 640 px
+              (если версий нет — сам файл, srcset пустой) #}
+          {%- set urls = s.photos|map("media_src", 1920)|list %}
+          {%- set thumbs = s.photos|map("media_src", 640)|list %}
+          {%- set srcsets = s.photos|map("media_srcset")|list %}
+          {%- set meta = [s.category, s.city, s.year|string]|select|join(", ") %}
+          <li class="stand-card" data-stand data-layout="{{ s.layout }}" data-area="{{ s.area_range }}" data-floors="{{ s.floors }}">
+            <button class="stand-open" type="button"
+                    data-gallery='{{ {"title": s.title, "meta": meta, "description": s.description, "specs": s.specs, "images": urls, "thumbs": thumbs, "srcsets": srcsets, "video": s.video, "vimeo": s.vimeo}|tojson }}'>
+              <span class="stand-media">
+                {%- if urls %}{% set srcset = s.photos[0]|media_srcset %}<img src="{{ s.photos[0]|media_src(640) }}"{% if srcset %} srcset="{{ srcset }}" sizes="(min-width: 860px) 20rem, 50vw"{% endif %} alt="" width="1280" height="720" loading="lazy" decoding="async">{% endif %}
+                <span class="stand-badges">
+                  {%- if s.example %}<span class="badge">{{ page.example_badge or "Пример" }}</span>{% endif %}
+                  <span class="badge">{{ (page.photo_count or "{n} фото")|replace("{n}", urls|length|string) }}</span>
+                </span>
+              </span>
+              <span class="stand-title">{{ s.title }}</span>
+              <span class="stand-meta">{{ meta }}</span>
+            </button>
+            {#- Видео смотрят на сайте: кнопка открывает галерею стенда сразу с плеером (main.js) #}
+            {%- if s.vimeo %}
+            <button class="stand-video" type="button" data-play-video aria-label="{{ ui.video or 'Смотреть видео' }}: {{ s.title }}">
+              <span class="play-icon" aria-hidden="true"></span>{{ ui.video or "Смотреть видео" }}
+            </button>
+            {%- endif %}
+          </li>
+          {%- endfor %}
+        </ul>
+      </section>
+      {%- else %}
+      <p class="empty">{{ (page.empty or "За {year} год проекты скоро появятся.")|replace("{year}", y.year|string) }}</p>
+      {%- endfor %}
+    </div>
+    {%- endfor %}

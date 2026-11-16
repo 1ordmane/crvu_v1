@@ -1,0 +1,230 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ "Новый проект" if is_new else project.title }}{% endblock %}
+{%- block head %}
+{%- if not is_new %}
+  <script src="{{ url_for('static', filename='js/admin-photos.js') }}" defer></script>
+{%- endif %}
+{%- endblock %}
+{% block content %}
+<p class="back"><a href="{{ url_for('admin.projects') }}">← Все проекты</a></p>
+
+<div class="page-head">
+  <div>
+    <h1>{{ "Новый проект" if is_new else project.title }}</h1>
+    {%- if not is_new %}
+    <p class="project-meta">
+      {%- if project.status == "published" %}<span class="tag tag-published">Опубликован</span>
+      <a href="{{ url_for('main.page', slug='portfolio') }}" target="_blank" rel="noopener">Смотреть на сайте</a>
+      {%- else %}<span class="tag tag-draft">Черновик — посетители его не видят</span>{% endif %}
+    </p>
+    {%- else %}
+    <p class="muted">Заполните поля и выберите фото — проект сохранится вместе с ними.</p>
+    {%- endif %}
+  </div>
+  {%- if not is_new %}
+  <form method="post" action="{{ url_for('admin.set_status', project_id=project.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {%- if project.status == "published" %}
+    <button class="button" type="submit" name="status" value="draft">Снять с публикации</button>
+    {%- else %}
+    <button class="button button-primary" type="submit" name="status" value="published">Опубликовать</button>
+    {%- endif %}
+  </form>
+  {%- endif %}
+</div>
+
+{%- if not is_new and (project.source or project.review) %}
+{#- Проект из импорта подборок (flask import-drafts): откуда фото и что проверить перед публикацией #}
+<div class="message message-note">
+  {%- if project.source %}
+  <p>Импортирован из папки: <strong>{{ project.source }}</strong></p>
+  {%- endif %}
+  {%- if project.review %}
+  <p>Проверьте перед публикацией:</p>
+  <ul>
+    {%- for note in project.review %}
+    <li>{{ note }}</li>
+    {%- endfor %}
+  </ul>
+  {%- endif %}
+</div>
+{%- endif %}
+
+{%- if errors %}
+<div class="message message-error" role="alert">
+  <p>Не сохранено:</p>
+  <ul>
+    {%- for error in errors %}
+    <li>{{ error }}</li>
+    {%- endfor %}
+  </ul>
+</div>
+{%- endif %}
+
+<form class="panel stack" method="post"{% if is_new %} enctype="multipart/form-data"{% endif %} id="project-form"
+      action="{{ url_for('admin.new_project') if is_new else url_for('admin.edit_project', project_id=project.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  {%- if not is_new %}
+  {#- Порядок фото (первое — обложка) уходит вместе с формой: стрелки и «Сделать обложкой» меняют его
+      в браузере (admin-photos.js), а записывается он только кнопкой «Сохранить изменения» #}
+  <div data-photo-order>
+    {%- for photo in photos %}
+    <input type="hidden" name="photo_order" value="{{ photo }}">
+    {%- endfor %}
+  </div>
+  {%- endif %}
+  {#- Поля проекта — одна сетка .form-grid (admin.css): на широком экране 4 колонки — название и выставка
+      по половине, затем месяц, год, площадь, планировка, затем этажность и видео, ниже описание во всю ширину.
+      Старые поля (город, категория, характеристики) не показываются и не стираются #}
+  <div class="form-grid">
+    <label class="field field-half">
+      <span>Название компании / стенда <em>обязательно</em></span>
+      <input name="title" value="{{ project.title or '' }}" required maxlength="200" placeholder="Агрос. Трансфаир">
+    </label>
+    <label class="field field-half">
+      <span>Выставка <em>обязательно</em></span>
+      <input name="exhibition" value="{{ project.exhibition or '' }}" required maxlength="200" list="exhibition-list"
+             autocomplete="off" aria-describedby="exhibition-hint">
+      {%- include "admin/_exhibition_list.html" %}
+      <small id="exhibition-hint">Можно выбрать существующую или ввести новую.</small>
+    </label>
+    <label class="field field-short">
+      <span>Месяц <em>обязательно</em></span>
+      <select name="month" required>
+        <option value=""{% if not project.month %} selected{% endif %}>—</option>
+        {%- for name in months %}
+        <option value="{{ loop.index }}"{% if project.month == loop.index %} selected{% endif %}>{{ name }}</option>
+        {%- endfor %}
+      </select>
+    </label>
+    <label class="field field-short">
+      <span>Год <em>обязательно</em></span>
+      <select name="year" required>
+        <option value=""{% if project.year not in years %} selected{% endif %}>—</option>
+        {%- for y in years %}
+        <option value="{{ y }}"{% if project.year == y %} selected{% endif %}>{{ y }}</option>
+        {%- endfor %}
+      </select>
+    </label>
+    <label class="field">
+      <span>Площадь, м² <em>обязательно</em></span>
+      <input name="area" value="{{ area }}" required inputmode="decimal" pattern="[0-9]{1,6}([.,][0-9]{1,2})?"
+             maxlength="9" placeholder="40,5" aria-describedby="area-hint">
+      <small id="area-hint">Допускаются дробные значения, например 40,5.</small>
+    </label>
+    <label class="field">
+      <span>Планировка стенда <em>{% if layout_optional %}можно позже{% else %}обязательно{% endif %}</em></span>
+      <select name="layout"{% if not layout_optional %} required{% endif %} aria-describedby="layout-hint">
+        <option value=""{% if project.layout not in layouts %} selected{% endif %}>—</option>
+        {%- for name in layouts %}
+        <option value="{{ name }}"{% if project.layout == name %} selected{% endif %}>{{ name }}</option>
+        {%- endfor %}
+      </select>
+      {%- if layout_optional %}
+      <small id="layout-hint">Старый проект: планировка ещё не выбрана. Сохранить можно, опубликовать снова — только с ней.</small>
+      {%- else %}
+      <small id="layout-hint">Угловой, остров, линейный или полуостров.</small>
+      {%- endif %}
+    </label>
+    <label class="field">
+      <span>Этажность <em>необязательно</em></span>
+      <select name="floors" aria-describedby="floors-hint">
+        <option value=""{% if project.floors not in floors %} selected{% endif %}>Не указана</option>
+        {%- for value, name in floors.items() %}
+        <option value="{{ value }}"{% if project.floors == value %} selected{% endif %}>{{ name }}</option>
+        {%- endfor %}
+      </select>
+      <small id="floors-hint">Используется в фильтрах портфолио.</small>
+    </label>
+    <label class="field field-three">
+      <span>Видео проекта (Vimeo или Rutube) <em>необязательно</em></span>
+      <input name="video" type="url" value="{{ project.video or '' }}" maxlength="500"
+             placeholder="https://rutube.ru/video/… или https://vimeo.com/…" aria-describedby="video-hint">
+      <small id="video-hint">Ссылка на страницу видео, например https://rutube.ru/video/c6cc4d620b1d4338901770a44b3e82f4/
+        или https://vimeo.com/123456789. Закрытое видео — со ссылкой «Поделиться» (с ключом ?p=… или вторым кодом).</small>
+    </label>
+    <label class="field field-wide">
+      <span>Описание <em>необязательно</em></span>
+      <textarea name="description" rows="4" maxlength="5000">{{ project.description or '' }}</textarea>
+    </label>
+  </div>
+
+  {%- if is_new %}
+  <h2>Фотографии</h2>
+  <label class="field">
+    <span>Фото проекта</span>
+    <input type="file" name="photos" multiple
+           accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" aria-describedby="new-photos-hint">
+    <small id="new-photos-hint">Можно выбрать сразу несколько (Cmd+A в окне выбора). Порядок — как выбраны, первое фото —
+      обложка; потом его можно поменять. JPG, PNG или WebP, до {{ limits.image_mb }} МБ каждое, не больше
+      {{ limits.files }} файлов и {{ limits.upload_mb }} МБ за раз. Фото уменьшаются до {{ limits.side }} px и
+      сохраняются в WebP без метаданных (EXIF, геопозиция); исходный файл хранится отдельно и на сайт не попадает.
+      Большие фото загружаются до минуты — не закрывайте страницу, ход отправки браузер показывает внизу окна.</small>
+  </label>
+  <label class="checkbox">
+    <input type="checkbox" name="publish"{% if project.publish %} checked{% endif %}>
+    <span>Опубликовать сразу — если загрузится хотя бы одно фото</span>
+  </label>
+  {%- endif %}
+
+  <div class="actions">
+    <button class="button button-primary button-large" type="submit">{{ "Сохранить проект" if is_new else "Сохранить изменения" }}</button>
+  </div>
+</form>
+
+{%- if not is_new %}
+<section class="panel stack" id="photos" aria-labelledby="photos-title">
+  <h2 id="photos-title">Фотографии</h2>
+  <p class="muted">Первое фото — обложка карточки, остальные идут в галерее в этом порядке.</p>
+
+  <form class="upload" method="post" enctype="multipart/form-data"
+        action="{{ url_for('admin.upload_photos', project_id=project.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label class="field">
+      <span>Добавить фото</span>
+      <input type="file" name="photos" multiple required
+             accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" aria-describedby="upload-hint">
+      <small id="upload-hint">JPG, PNG или WebP, до {{ limits.image_mb }} МБ каждое, не больше {{ limits.files }} файлов и {{ limits.upload_mb }} МБ за раз.
+        Фото уменьшаются до {{ limits.side }} px по длинной стороне и сохраняются в WebP без метаданных (EXIF, геопозиция).</small>
+    </label>
+    <button class="button button-primary" type="submit">Загрузить</button>
+  </form>
+
+  {%- if photos %}
+  {#- Со скриптом: порядок и обложка меняются на месте, без перезагрузки, и сохраняются вместе с формой;
+      удаление — после подтверждения отдельным запросом, карточка убирается только после ответа сервера.
+      Без скрипта кнопки работают как раньше: каждое действие сохраняется сразу #}
+  <ol class="photo-grid" data-photo-grid>
+    {%- for photo in photos %}
+    <li class="photo-card" data-photo="{{ photo }}">
+      <img src="{{ photo|media_src(640) }}" alt="Фото {{ loop.index }}" width="320" height="180" loading="lazy">
+      <p class="photo-label">{% if loop.first %}<span class="tag tag-published">Обложка</span>{% else %}Фото {{ loop.index }}{% endif %}</p>
+      <form method="post" action="{{ url_for('admin.photo_action', project_id=project.id) }}" class="photo-actions">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="photo" value="{{ photo }}">
+        <button class="button button-small" type="submit" name="action" value="cover" data-photo-action="cover"{% if loop.first %} hidden{% endif %}>Сделать обложкой</button>
+        <button class="icon-button" type="submit" name="action" value="up" data-photo-action="up" aria-label="Фото {{ loop.index }} выше"{% if loop.first %} disabled{% endif %}>←</button>
+        <button class="icon-button" type="submit" name="action" value="down" data-photo-action="down" aria-label="Фото {{ loop.index }} ниже"{% if loop.last %} disabled{% endif %}>→</button>
+        <button class="button button-small button-danger-quiet" type="submit" name="action" value="delete" data-photo-action="delete">Удалить</button>
+      </form>
+    </li>
+    {%- endfor %}
+  </ol>
+  {#- Панель под фото, прилипает к низу окна: сообщение о действии и сохранение формы проекта.
+      Появляется только со скриптом и ничего не сдвигает над фото #}
+  <div class="photo-bar" data-photo-bar hidden>
+    <p class="message message-note" data-photo-status role="status" aria-live="polite"></p>
+    <button class="button button-primary" type="submit" form="project-form" data-photo-save hidden>Сохранить изменения</button>
+  </div>
+  {%- else %}
+  <p class="empty">Фото пока нет. Без фото проект нельзя опубликовать.</p>
+  {%- endif %}
+</section>
+
+<section class="panel" aria-labelledby="danger-title">
+  <h2 id="danger-title">Удаление</h2>
+  <p class="muted">Чтобы только скрыть проект с сайта, снимите его с публикации.</p>
+  <a class="button button-danger-quiet" href="{{ url_for('admin.delete_project', project_id=project.id) }}">Удалить проект…</a>
+</section>
+{%- endif %}
+{% endblock %}

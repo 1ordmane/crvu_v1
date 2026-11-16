@@ -1,0 +1,22 @@
+/* Предпросмотр в визуальном редакторе: подключается только в рамке редактора.
+   Обводка — поверх элемента (outline), раскладку страницы не меняет. */
+
+:root {
+  --edit-hover: rgb(255 117 82 / 0.95);
+  --edit-selected: #3D8BFD;
+}
+
+[data-edit] {
+  cursor: pointer;
+}
+
+[data-edit]:hover {
+  outline: 2px dashed var(--edit-hover);
+  outline-offset: 3px;
+}
+
+.is-edit-selected,
+.is-edit-selected:hover {
+  outline: 2px solid var(--edit-selected);
+  outline-offset: 3px;
+}

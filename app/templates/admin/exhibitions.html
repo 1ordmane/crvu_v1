@@ -1,0 +1,83 @@
+{% extends "admin/base.html" %}
+{% block title %}Выставки{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Выставки</h1>
+    <p class="muted">Выставка — это событие конкретного года: «Мебель» 2025 и «Мебель» 2026 — разные выставки.
+      Регистр букв и лишние пробелы не важны. Месяц указывается в каждом проекте.</p>
+  </div>
+</div>
+
+{%- if errors %}
+<div class="message message-error" role="alert">
+  <p>Не сохранено:</p>
+  <ul>
+    {%- for error in errors %}
+    <li>{{ error }}</li>
+    {%- endfor %}
+  </ul>
+</div>
+{%- endif %}
+
+<form class="panel filters" method="post" action="{{ url_for('admin.exhibitions') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label class="field filter-search">
+    <span>Новая выставка</span>
+    <input name="name" value="{{ form.name }}" required maxlength="200" placeholder="Название, например «Мебель»">
+  </label>
+  <label class="field">
+    <span>Год</span>
+    <select name="year" required>
+      {%- for y in years %}
+      <option value="{{ y }}"{% if form.year == y %} selected{% endif %}>{{ y }}</option>
+      {%- endfor %}
+    </select>
+  </label>
+  <div class="filter-actions">
+    <button class="button button-primary" type="submit">Добавить выставку</button>
+  </div>
+</form>
+
+{%- for year, events in by_year %}
+<details class="year-group"{% if loop.first %} open{% endif %} id="e-{{ year }}">
+  <summary>
+    <span class="group-name">{{ year }}</span>
+    <span class="group-count" aria-label="выставок: {{ events|length }}">{{ events|length }}</span>
+  </summary>
+  <ul class="project-list">
+    {%- for e in events %}
+    <li class="expo-row">
+      <details class="expo-projects">
+        <summary>
+          <span class="project-title">{{ e.name }}</span>
+          <span class="muted">{% if e.projects %}проектов: {{ e.projects|length }}{% else %}пока без проектов{% endif %}</span>
+        </summary>
+        {%- if e.projects %}
+        <ul class="expo-project-links">
+          {%- for p in e.projects %}
+          <li><a href="{{ url_for('admin.edit_project', project_id=p.id) }}">{{ p.title }}</a>
+            {%- if p.status != "published" %} <span class="tag tag-draft">Черновик</span>{% endif %}</li>
+          {%- endfor %}
+        </ul>
+        {%- endif %}
+      </details>
+      <span class="row-actions">
+        {%- if e.projects %}
+        <a class="button button-small" href="{{ url_for('admin.projects', event=e.key) }}">В списке проектов</a>
+        {%- elif e.stored %}
+        <form method="post" action="{{ url_for('admin.delete_exhibition') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="key" value="{{ e.key }}">
+          <button class="button button-small button-danger-quiet" type="submit">Убрать</button>
+        </form>
+        {%- endif %}
+      </span>
+    </li>
+    {%- endfor %}
+  </ul>
+</details>
+{%- else %}
+<p class="empty">Выставок пока нет. Добавьте первую выше или впишите её при создании проекта.</p>
+{%- endfor %}
+{% endblock %}

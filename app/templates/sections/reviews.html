@@ -1,0 +1,52 @@
+{#- Видеоотзывы клиентов на полупрозрачной «бумаге». Три позиции — ролики, выбранные в админке
+    («Видеоотзывы» → «На главной», content/videos.json); пустая позиция или выключенный ролик —
+    заглушка «Скоро здесь будет видео» (кадр 16:9 со значком: не кнопка и не плеер, фокус не получает).
+    Роликов на главной нет — заглушки по записям items, как раньше. Остальные включённые ролики —
+    в шторке «Другие видео-отзывы» (index.html), кнопка к ней — под карточками.
+    Ссылка внизу ведёт к блоку на главной (cta_target) и видна, только если этот блок есть на странице. #}
+{%- from "partials/video.html" import video_card %}
+{%- set t = {
+  "placeholder": section.placeholder or "Скоро здесь будет видео",
+  "caption": section.caption or "Видеоотзыв клиента",
+} %}
+  <section class="section reviews is-paper" id="{{ section.id }}" aria-labelledby="{{ section.id }}-title">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title" id="{{ section.id }}-title"{{ edit(section, "title") }}>{{ section.title }}</h2>
+        {%- if section.lead %}
+        <p class="section-lead"{{ edit(section, "lead") }}>{{ section.lead }}</p>
+        {%- endif %}
+      </div>
+      {%- set chosen = video_cards.featured if video_cards and video_cards.featured|select|list else [] %}
+      <ul class="review-grid">
+        {%- for item in (chosen or section.get("items", [])) %}
+        {%- if chosen and item %}
+        {{ video_card(item, section, edit(section, "items")) }}
+        {%- else %}
+        {#- Заглушка в предпросмотре целиком — метка «items»: щелчок открывает окно выбора видео
+            (тексты заглушки и подписи — в группе «Видеоотзывы» Редактора) #}
+        <li class="review-card"{{ edit(section, "items") }}>
+          <div class="review-media">
+            <svg class="review-play" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="23"/><path d="M20 16.5v15l12-7.5z"/></svg>
+            <p class="review-soon">{{ t.placeholder }}</p>
+          </div>
+          <p class="review-caption">{{ t.caption }}</p>
+        </li>
+        {%- endif %}
+        {%- endfor %}
+      </ul>
+      {%- if video_sheet %}
+      <p class="reviews-more-row">
+        <a class="btn btn-quiet reviews-more" href="{{ url_for('main.page', slug=video_slug) }}" data-route="{{ video_slug }}"{{ edit(section, "more_button") }}>{{ section.more_button or "Другие видео-отзывы →" }}</a>
+      </p>
+      {%- endif %}
+      {%- if section.cta and section.cta_target in sections|map(attribute="id")|list %}
+      <div class="reviews-cta">
+        {%- if section.cta_text %}
+        <p{{ edit(section, "cta_text") }}>{{ section.cta_text }}</p>
+        {%- endif %}
+        <a class="btn btn-quiet" href="#{{ section.cta_target }}"{{ edit(section, "cta") }}>{{ section.cta }}</a>
+      </div>
+      {%- endif %}
+    </div>
+  </section>

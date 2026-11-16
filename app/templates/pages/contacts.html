@@ -1,0 +1,21 @@
+{%- from "partials/contacts.html" import contact_value, social_icon %}
+    <button class="btn btn-primary btn-lg" type="button" data-open-request>{{ page.button or "Связаться с менеджером" }}</button>
+    {%- if contacts %}
+    <dl class="contact-list">
+      {%- for c in contacts %}
+      <div class="contact-item"><dt>{{ c.label }}</dt><dd>{{ contact_value(c) }}</dd></div>
+      {%- endfor %}
+    </dl>
+    {%- else %}
+    <p class="empty">{{ page.empty or "Контакты скоро появятся здесь." }}</p>
+    {%- endif %}
+    {%- if socials %}
+    <div class="socials">
+      <h3 class="socials-title" id="socials-title">{{ page.socials_title or "Мы в соцсетях и мессенджерах" }}</h3>
+      <ul class="social-list" aria-labelledby="socials-title">
+        {%- for s in socials %}
+        <li><a class="social-link social-link--{{ s.network }}" href="{{ s.url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ s.label }} — откроется в новой вкладке">{{ social_icon(s.network) }}<span class="social-name">{{ s.label }}</span></a></li>
+        {%- endfor %}
+      </ul>
+    </div>
+    {%- endif %}

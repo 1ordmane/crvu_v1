@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+{#- Сцена сборки стенда — фон всей главной: кадр зависит от прокрутки всей страницы (как и прежде).
+    Кадры — из видео video.mp4 (static/img/stand-video/: 1280 × 632 — компьютер, 960 × 474 — телефон;
+    128 кадров от пустого зала до готового стенда с подсветкой, в ракурсе петли pre-video.mp4).
+    Вверху — готовый стенд, первые 0,75 экрана прокрутки — сборка назад до пустого зала, дальше
+    до низа страницы — сборка вперёд. data-scene-light — кадры светлые: затемнение под текстом
+    плотнее (style.css). Прежние кадры 1020.mp4 остались в img/stand-1020/ (1280 × 854, другой
+    ракурс — вернуть вместе с прежними правилами .scene-canvas в style.css)
+    Над холстом — петля pre-video.mp4 (без звука): видна только в самом верху страницы, при прокрутке
+    растворяется в кадры, при возврате наверх появляется снова (main.js). Файл main.js подставляет сам
+    (data-src): без JavaScript и при уменьшении движения видео не грузится — остаётся прежняя сцена.
+    Убрать петлю — удалить <video> #}
+<div class="scene" aria-hidden="true" data-scene data-scene-light
+     data-frames-base="{{ url_for('static', filename='img/stand-video/1280/') }}"
+     data-frames-base-mobile="{{ url_for('static', filename='img/stand-video/960/') }}"
+     data-frame-count="128">
+  <canvas class="scene-canvas" width="1280" height="632" data-scene-canvas></canvas>
+  <video class="scene-loop" autoplay loop muted playsinline disablepictureinpicture disableremoteplayback
+         preload="none" tabindex="-1" poster="{{ url_for('static', filename='video/pre-video-poster.webp') }}"
+         data-src="{{ url_for('static', filename='video/pre-video.mp4') }}" data-scene-loop></video>
+</div>
+{#- Линия монтажа — тонкая полоса под шапкой, над контентом #}
+<div class="gauge" aria-hidden="true" data-gauge>
+  <div class="gauge-track" data-gauge-track><span class="gauge-fill"></span></div>
+</div>
+
+<main id="main">
+  <section class="hero" aria-labelledby="hero-title" data-hero>
+    <div class="hero-copy">
+      {#- Тире склеено с предыдущим словом неразрывным пробелом: строка заголовка и подзаголовка не начинается с «—» #}
+      <h1 class="hero-title" id="hero-title"{{ edit("hero.title") }}>{{ hero.title|replace(" — ", "\u00a0— ") }}</h1>
+      {%- if hero.lead %}
+      <p class="hero-lead"{{ edit("hero.lead") }}>{{ hero.lead|replace(" — ", "\u00a0— ") }}</p>
+      {%- endif %}
+      <div class="hero-actions">
+        {%- if hero.primary and hero.primary_target in sections|map(attribute="id")|list %}
+        <a class="btn btn-primary btn-lg" href="#{{ hero.primary_target }}"{{ edit("hero.primary") }}>{{ hero.primary }}</a>
+        {%- endif %}
+        {#- Вторая кнопка: secondary_action "request" — открывает форму заявки (тот же механизм, что у кнопки
+            в шапке); иначе — к блоку на главной (secondary_target), а если его нет на странице — в раздел #}
+        {%- if hero.secondary and hero.secondary_action == "request" %}
+        <button class="btn btn-secondary btn-lg" type="button" data-open-request{{ edit("hero.secondary") }}>{{ hero.secondary }}</button>
+        {%- elif hero.secondary and hero.secondary_target in sections|map(attribute="id")|list %}
+        <a class="btn btn-secondary btn-lg" href="#{{ hero.secondary_target }}"{{ edit("hero.secondary") }}>{{ hero.secondary }}</a>
+        {%- elif hero.secondary and hero.secondary_page in pages|map(attribute="slug")|list %}
+        <a class="btn btn-secondary btn-lg" href="{{ url_for('main.page', slug=hero.secondary_page) }}" data-route="{{ hero.secondary_page }}"{{ edit("hero.secondary") }}>{{ hero.secondary }}</a>
+        {%- endif %}
+      </div>
+      {%- if hero.facts %}
+      <ul class="hero-facts"{{ edit("hero.facts") }}>
+        {%- for fact in hero.facts %}
+        <li>{{ fact }}</li>
+        {%- endfor %}
+      </ul>
+      {%- endif %}
+    </div>
+    {#- Подсказка «дальше — прокрутка»: только оформление, уходит вместе с первым экраном #}
+    <span class="hero-scroll" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+    </span>
+  </section>
+
+  {%- for section in sections %}
+  {% include "sections/" ~ section.type ~ ".html" ignore missing %}
+  {%- endfor %}
+</main>
+
+<div class="backdrop" data-backdrop{% if not sheet %} hidden{% endif %}></div>
+
+{%- for page in pages if not (about_section and page is sameas about_page) %}
+<section class="sheet{% if sheet == page.slug %} is-open{% endif %}" id="{{ page.slug }}" aria-labelledby="{{ page.slug }}-title" tabindex="-1" data-sheet>
+  <div class="sheet-bar">
+    <h2 class="sheet-title" id="{{ page.slug }}-title">{{ page.title }}</h2>
+    <a class="btn btn-quiet sheet-close" href="{{ url_for('main.index') }}" data-route="home">{{ ui.close or "Закрыть" }}</a>
+  </div>
+  <div class="sheet-body">
+    {%- include "pages/" ~ page.type ~ ".html" ignore missing %}
+  </div>
+</section>
+{% endfor %}
+
+{#- «Другие видео-отзывы» — такая же шторка, как разделы, со своим адресом /video-reviews; открывает её
+    кнопка под видеоотзывами (в меню её нет). Внутри — включённые ролики, которых нет среди трёх на главной #}
+{%- if video_sheet %}
+{%- from "partials/video.html" import video_card %}
+{%- set reviews_section = sections|selectattr("type", "equalto", "reviews")|first %}
+<section class="sheet{% if sheet == video_slug %} is-open{% endif %}" id="{{ video_slug }}" aria-labelledby="{{ video_slug }}-title" tabindex="-1" data-sheet data-video-sheet>
+  <div class="sheet-bar">
+    <h2 class="sheet-title" id="{{ video_slug }}-title"{{ edit(reviews_section, "more_title") }}>{{ reviews_section.more_title or "Другие видео-отзывы" }}</h2>
+    <a class="btn btn-quiet sheet-close" href="{{ url_for('main.index') }}" data-route="home">{{ ui.close or "Закрыть" }}</a>
+  </div>
+  <div class="sheet-body">
+    <ul class="review-grid video-grid">
+      {%- for v in video_cards.more %}
+      {{ video_card(v, reviews_section, edit(reviews_section, "items")) }}
+      {%- endfor %}
+    </ul>
+  </div>
+</section>
+{%- endif %}
+{% endblock %}

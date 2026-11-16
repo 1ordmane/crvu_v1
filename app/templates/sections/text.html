@@ -1,0 +1,13 @@
+  <section class="section text-section" id="{{ section.id }}" aria-labelledby="{{ section.id }}-title">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title" id="{{ section.id }}-title" data-reveal{{ edit(section, "title") }}>{{ section.title }}</h2>
+        {%- if section.lead %}
+        <p class="section-lead" data-reveal{{ edit(section, "lead") }}>{{ section.lead }}</p>
+        {%- endif %}
+      </div>
+      {%- for paragraph in section.get("paragraphs", []) %}
+      <p class="prose" data-reveal{{ edit(section, "paragraphs") }}>{{ paragraph }}</p>
+      {%- endfor %}
+    </div>
+  </section>

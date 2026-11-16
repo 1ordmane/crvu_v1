@@ -1,0 +1,4107 @@
+@font-face {
+  font-family: "Onest";
+  src: url("../fonts/onest-cyrillic.woff2") format("woff2");
+  font-weight: 400 800;
+  font-display: swap;
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+@font-face {
+  font-family: "Onest";
+  src: url("../fonts/onest-latin.woff2") format("woff2");
+  font-weight: 400 800;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light;
+
+  /* Фирменные цвета ЦРВУ (из логотипа) */
+  --brand: #F04624;
+  --brand-strong: #D93A1B;   /* фон кнопок: белый текст 4.6:1 */
+  --brand-strong-hover: #C2321A;
+  --brand-text: #C9361A;     /* ссылки и акценты на светлом фоне: 4.7:1 */
+  /* Фильтры портфолио: выбранное — красной рамкой и схемой; белый текст на этом цвете не читается
+     (4:1), поэтому подпись остаётся тёмной */
+  --filter-accent: #FF0000;
+  --filter-accent-tint: rgb(255 0 0 / 0.07);
+
+  --ink: #2C2829;
+  --ink-soft: #4A4445;
+  --muted: #6A6465;
+  --line: #E3DEDB;
+  --line-strong: #CFC8C4;
+  --copy-border: rgb(44 40 41 / 0.42);
+  --copy-bg: rgb(255 255 255 / 0.5);
+  --copy-tip-bg: var(--ink);
+  --copy-tip-fg: var(--paper);
+  --paper: #F6F4F1;
+  --surface: #FFFFFF;
+  /* Значки соцсетей в «Контактах» — фирменные цвета сетей */
+  --telegram: #26A5E4;
+  --vk: #0077FF;
+  --whatsapp: #25D366;
+  --max-start: #3D8BFF;
+  --max-end: #8A3FFC;
+  --on-brand-icon: #FFFFFF;
+
+  /* Цвет выставочного зала с рендера */
+  --hall: #0E1011;
+  /* Светлый зал кадров video.mp4 — тон пола у нижнего края кадра: им заполнено место под кадром,
+     когда кадр уже экрана (портретный экран), — пол продолжается без шва */
+  --hall-light: #B3AEAF;
+  --on-dark: #F6F4F1;
+  --on-dark-muted: #B9B4B1;
+  --shade: 14 16 17;
+
+  --font: "Onest", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* Три начертания Onest: текст, подписи и кнопки, заголовки */
+  --fw-text: 400;
+  --fw-medium: 500;
+  --fw-strong: 600;
+  --fw-display: 800;
+
+  --fs-xs: 0.8125rem;
+  --fs-sm: 0.9375rem;
+  --fs-base: 1.0625rem;
+  --fs-md: 1.25rem;
+  /* Портфолио на телефоне: заголовок выставки и название проекта в узкой карточке */
+  --fs-group-title: 1.125rem;
+  --fs-card-title: 0.875rem;
+  /* «Реализовано»: выставка в карточке — крупнее компании, но «Expo Electronica 2026» в одну строку */
+  --fs-project-event: 1.5rem;
+  --fs-lg: clamp(1.375rem, 1.2rem + 0.8vw, 1.75rem);
+  --fs-xl: clamp(2rem, 1.5rem + 2.2vw, 3.25rem);
+  --fs-hero: clamp(2.25rem, 0.9rem + 4.3vw, 6.25rem);
+  --fs-display: clamp(4.5rem, 3rem + 8vw, 9rem);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+  --space-section: clamp(4rem, 3rem + 5vw, 8rem);
+
+  --gutter: clamp(1rem, 4vw, 4rem);
+  --container: 74rem;
+  --header-h: 4.5rem;
+  --gauge-h: 3px;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.5rem;
+  --radius-pill: 999px;
+  /* Фото проектов — почти прямой угол, как у отпечатка: скругление не спорит с архитектурой стенда */
+  --radius-media: 0.25rem;
+  /* Компактные секции (проекты, конфигуратор): отступ сверху и снизу */
+  --space-compact: clamp(2.5rem, 1.75rem + 2.5vw, 4.5rem);
+  /* «Реализовано», отзывы, лист формы конфигуратора — полупрозрачная бумага над сценой: тон --paper
+     (#F6F4F1) с альфой и лёгкое размытие. Сборка и разборка стенда хорошо видны сквозь секции; размытие
+     сглаживает мелкие детали кадра под текстом, поля и кнопки — со своим сплошным фоном */
+  --paper-rgb: 246 244 241;
+  --paper-sheer-alpha: 0.22;
+  --paper-sheer-blur: 3px;
+  /* Текст прямо на полупрозрачной бумаге — мягкий ореол в её цвет: буквы читаются и над тёмными
+     деталями стенда, на светлом фоне ореол не заметен */
+  --text-on-sheer: 0 0 0.15rem rgb(var(--paper-rgb)), 0 0 0.5rem rgb(var(--paper-rgb) / 0.95),
+    0 0 1.25rem rgb(var(--paper-rgb) / 0.75);
+  /* Конфигуратор — чуть плотнее соседей (вместе с линией сверху — граница после «Реализовано»), но стенд
+     за ним тоже виден. Не ниже запасной плотности без backdrop-filter (0.45, @supports в конце файла) */
+  --paper-config-alpha: 0.5;
+
+  --tap: 3rem;
+  /* Плавающая кнопка «Связаться»: высота, отступ от низа (с учётом «чёлки» и полосы жестов) и запас,
+     который оставляют под ней подвал и шторки */
+  --fab-size: 3.5rem;
+  --fab-offset: max(var(--space-4), calc(env(safe-area-inset-bottom, 0px) + var(--space-2)));
+  --fab-clearance: calc(var(--fab-size) + var(--fab-offset) + var(--space-4));
+  /* Светлая обводка кнопки: отделяет её от красных и тёмных деталей сцены и фото */
+  --fab-ring: rgb(255 255 255 / 0.35);
+  --tap-min: 2.75rem;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --shadow-lift: 0 1.5rem 4rem rgb(var(--shade) / 0.28);
+
+  /* Светлые панели (шапка, карточки, форма) — локально, поверх сцены */
+  --veil: 246 244 241;
+
+  /* Жидкое стекло — панели с текстом поверх сцены. Плотность заливки (--lg-alpha)
+     у каждого типа своя: чем больше текста и полей, тем плотнее. backdrop-filter
+     размывает кадр, приглушает его контраст и осветляет — поэтому даже при заливке
+     0,3–0,5 стенд за стеклом виден, а тёмный текст читается; блик — градиент
+     по диагонали, светлые кромки и внутреннее свечение */
+  --lg-blur: blur(26px) saturate(1.6) contrast(0.65) brightness(1.75);
+  --lg-blur-soft: blur(14px) saturate(1.5) brightness(1.3);
+  --lg-edge: rgb(255 255 255 / 0.7);
+  --lg-sheen:
+    linear-gradient(135deg, rgb(255 255 255 / 0.6), rgb(255 255 255 / 0.12) 30%, rgb(255 255 255 / 0) 55%),
+    radial-gradient(90% 60% at 100% 100%, rgb(255 255 255 / 0.22), rgb(255 255 255 / 0) 60%);
+  --lg-shadow:
+    0 1rem 3rem rgb(var(--shade) / 0.25),
+    inset 0 1.5px 0 rgb(255 255 255 / 0.95),
+    inset 0 -1px 0 rgb(255 255 255 / 0.35),
+    inset 0 0 1.5rem rgb(255 255 255 / 0.12);
+  /* Без поддержки backdrop-filter заливка становится почти сплошной (см. @supports ниже) */
+  --lg-boost: 0;
+  /* Вложенные плашки внутри стекла — только тон, без второго размытия */
+  --lg-inset: rgb(255 255 255 / 0.42);
+
+  /* Текст прямо на сцене: зал на кадрах тёмный, поэтому текст светлый,
+     а мягкая тень отделяет его от светлых деталей стенда */
+  --on-scene: #F6F4F1;
+  --on-scene-soft: rgb(246 244 241 / 0.9);
+  --text-on-scene: 0 1px 1.25rem rgb(var(--shade) / 0.7), 0 1px 2px rgb(var(--shade) / 0.5);
+
+  /* Контент прямо на сцене: мягкое затемнение секции (без краёв), тонкие светлые
+     разделители, яркий оранжевый для мелких акцентов на тёмном и «дымчатое» стекло
+     для единственной панели — формы конфигуратора */
+  --scene-veil: linear-gradient(90deg, rgb(var(--shade) / 0.72), rgb(var(--shade) / 0.5) 40%, rgb(var(--shade) / 0.14) 72%, rgb(var(--shade) / 0));
+  --scene-veil-narrow: rgb(var(--shade) / 0.6);
+  --on-scene-line: rgb(246 244 241 / 0.22);
+  --brand-on-scene: #FF7552;
+  --text-on-scene-soft: 0 1px 2px rgb(var(--shade) / 0.6), 0 0 1rem rgb(var(--shade) / 0.45);
+  --smoke: rgb(var(--shade) / 0.46);
+  --smoke-edge: rgb(255 255 255 / 0.16);
+  --smoke-blur: blur(18px) saturate(1.3);
+
+  /* Линия монтажа: тонкая полоса под шапкой */
+  --gauge-track: rgb(255 255 255 / 0.14);
+
+  /* Размерная линия над подзаголовком первого экрана — тонкая */
+  --hero-dim-line: rgb(246 244 241 / 0.6);
+
+  /* Движение: мягкое «всплытие» снизу, быстрый старт и долгое затухание */
+  --reveal-shift: 1.75rem;
+  --reveal-duration: 0.9s;
+  --reveal-step: 90ms;
+  --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 860px) {
+  :root {
+    --header-h: 5.25rem;
+  }
+}
+
+/* База */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--header-h) + var(--space-4));
+  /* место под плавающую кнопку «Связаться»: фокус с клавиатуры не прячется за ней */
+  scroll-padding-bottom: var(--fab-clearance);
+}
+
+body {
+  margin: 0;
+  overflow-x: clip;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: var(--fs-base);
+  line-height: 1.55;
+  font-feature-settings: "tnum" 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.has-sheet {
+  overflow: hidden;
+}
+
+img,
+svg,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--brand-text);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
+}
+
+.container {
+  width: 100%;
+  max-width: calc(var(--container) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.skip-link {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 100;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--ink);
+  color: var(--paper);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+/* Кнопки */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--tap);
+  padding: 0 var(--space-5);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  background: none;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-lg {
+  min-height: 3.5rem;
+  padding: 0 var(--space-6);
+  font-size: var(--fs-base);
+}
+
+.btn-primary {
+  background: var(--brand-strong);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--brand-strong-hover);
+}
+
+/* Вторичная кнопка стоит прямо на тёмной сцене — светлый контур */
+.btn-secondary {
+  border-color: var(--on-scene);
+  background: rgb(var(--shade) / 0.35);
+  color: var(--on-scene);
+}
+
+.btn-secondary:hover {
+  background: var(--on-scene);
+  color: var(--ink);
+}
+
+.btn-quiet {
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+
+.btn-quiet:hover {
+  border-color: var(--ink);
+}
+
+/* Шапка */
+
+.site-header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  height: calc(var(--header-h) + env(safe-area-inset-top, 0px));
+  padding: env(safe-area-inset-top, 0px) var(--gutter) 0;
+  color: var(--ink);
+  /* Шапка видна всегда — стекло плотнее остальных панелей */
+  --lg-alpha: 0.55;
+}
+
+.site-header.is-solid,
+.has-sheet .site-header {
+  color: var(--ink);
+}
+
+.logo {
+  display: block;
+  flex: none;
+  margin-right: auto;
+  color: inherit;
+  line-height: 0;
+}
+
+/* Логотип в шапке: ширину задаёт viewBox (пропорции не меняются). Высота — по значку: исходные
+   34 px → 45 px (+32 %); текст внутри SVG увеличен меньше (partials/logo.html: «ЦЕНТР» +28 %,
+   подзаголовок +18 %). Уже 320 px логотип уменьшается, чтобы рядом помещалась кнопка «Меню» */
+.logo-mark {
+  width: auto;
+  height: clamp(2.125rem, 14vw, 2.8125rem);
+}
+
+.menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2.75rem;
+  padding: 0 var(--space-3);
+  border: 1px solid currentColor;
+  border-radius: var(--radius-pill);
+  background: none;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+  cursor: pointer;
+}
+
+.menu-toggle-bars,
+.menu-toggle-bars::before,
+.menu-toggle-bars::after {
+  display: block;
+  width: 1rem;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+  transition: transform 0.2s var(--ease), opacity 0.2s;
+}
+
+.menu-toggle-bars {
+  position: relative;
+}
+
+.menu-toggle-bars::before,
+.menu-toggle-bars::after {
+  content: "";
+  position: absolute;
+  left: 0;
+}
+
+.menu-toggle-bars::before {
+  top: -5px;
+}
+
+.menu-toggle-bars::after {
+  top: 5px;
+}
+
+.menu-toggle[aria-expanded="true"] .menu-toggle-bars {
+  background: transparent;
+}
+
+.menu-toggle[aria-expanded="true"] .menu-toggle-bars::before {
+  transform: translateY(5px) rotate(45deg);
+}
+
+.menu-toggle[aria-expanded="true"] .menu-toggle-bars::after {
+  transform: translateY(-5px) rotate(-45deg);
+}
+
+/* На телефоне меню — выпадающий список под шапкой */
+.site-nav {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  right: var(--gutter);
+  left: var(--gutter);
+  display: none;
+  flex-direction: column;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  /* Меню открывается над крупным белым заголовком — стекло почти плотное, ссылки читаются */
+  --lg-alpha: 0.74;
+}
+
+.site-nav.is-open {
+  display: flex;
+}
+
+.site-nav a {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  font-size: var(--fs-md);
+  font-weight: var(--fw-strong);
+  text-decoration: none;
+}
+
+.site-nav a:hover {
+  background: var(--line);
+}
+
+/* Текущий раздел — тёмный текст с фирменной чертой: на прозрачном стекле красный
+   текст не держит контраст 4,5:1, а черта отличает пункт не только цветом */
+.site-nav a[aria-current="page"] {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--brand);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.4em;
+}
+
+/* Телефон и email: на телефоне — в раскрытом меню под разделами, за тонкой линией */
+.header-contacts {
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--line-strong);
+}
+
+.site-nav .header-contacts a {
+  font-size: var(--fs-base);
+  font-variant-numeric: tabular-nums;
+  /* Протянуть мышью — выделить текст, а не перетащить ссылку: без перетаскивания (draggable="false",
+     в Safari — user-drag) и с явным user-select: text — иначе Chrome не начинает выделение в ссылке */
+  -webkit-user-drag: none;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Меню почты в шапке: появляется под адресом по щелчку (main.js, initEmailMenu). Белая карточка
+   над страницей; прячется классом, чтобы появление было плавным (без скрипта меню не видно) */
+.header-email-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* Значок «скопировать» справа от адреса (main.js, initCopy): копирует сразу, без меню.
+   Подтверждение — та же подсказка .copy-status, что в «Контактах»: под адресом, ничего не сдвигает */
+.header-copy {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: var(--tap-min);
+  height: var(--tap-min);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.header-copy[hidden] {
+  display: none;
+}
+
+.header-copy:hover {
+  color: var(--ink);
+  background: var(--line);
+}
+
+.header-copy svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Подсказка над шапкой и меню, а не под ними */
+.header-email-wrap .copy-status {
+  z-index: 60;
+  white-space: nowrap;
+}
+
+.email-menu {
+  position: absolute;
+  top: calc(100% + var(--space-1));
+  left: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  min-width: 13rem;
+  padding: var(--space-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-lift);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-0.25rem);
+  transition: opacity 0.16s var(--ease), transform 0.16s var(--ease), visibility 0s linear 0.16s;
+}
+
+.email-menu.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition-delay: 0s;
+}
+
+/* Пункты — ссылка и кнопка одного вида; специфичность выше правил ссылок меню и контактов.
+   Высота --tap — удобно попасть пальцем и на телефоне, и на широком экране */
+.site-nav .header-contacts .email-menu-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: var(--tap);
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+  text-align: left;
+  text-decoration: none;
+  white-space: nowrap;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.site-nav .header-contacts .email-menu-item:hover,
+.site-nav .header-contacts .email-menu-item:focus-visible {
+  background: var(--paper);
+  text-decoration: none;
+}
+
+/* «Адрес скопирован» для экранных дикторов — видимое сообщение показывает сама кнопка */
+.email-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .email-menu {
+    transform: none;
+    transition: none;
+  }
+}
+
+.header-cta {
+  display: none;
+}
+
+@media (min-width: 860px) {
+  /* Исходные 42 → 56 px (+33 %) от 1024 px; между 860 и 1024 px меньше — чтобы не теснить меню */
+  .logo-mark {
+    height: clamp(3.125rem, 3.66vw + 1.159rem, 3.5rem);
+  }
+
+  .menu-toggle {
+    display: none;
+  }
+
+  .site-nav {
+    position: static;
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-1);
+    padding: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .site-nav a {
+    min-height: 2.75rem;
+    padding: 0 var(--space-3);
+    color: inherit;
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-text);
+    opacity: 0.82;
+  }
+
+  .site-nav a:hover {
+    background: none;
+    opacity: 1;
+  }
+
+  .site-nav a[aria-current="page"] {
+    color: var(--ink);
+    opacity: 1;
+  }
+
+  .header-cta {
+    display: inline-flex;
+    margin-left: var(--space-3);
+  }
+
+  /* Контакты — колонка из двух строк за вертикальной линией: телефон крупнее, email под ним.
+     От 860 до 1023 px рядом с меню и кнопкой им не хватает места (кнопка сжималась в две строки) —
+     там они не показываются: телефон и email есть в разделе «Контакты» и в подвале */
+  .header-contacts {
+    display: none;
+    align-self: center;
+    justify-content: center;
+    margin: 0 0 0 var(--space-3);
+    padding: 0 0 0 var(--space-4);
+    border-top: 0;
+    border-left: 1px solid var(--line-strong);
+  }
+
+  .site-nav .header-contacts a {
+    min-height: 0;
+    padding: 0;
+    font-size: var(--fs-sm);
+    line-height: 1.3;
+    white-space: nowrap;
+    opacity: 1;
+  }
+
+  .site-nav .header-contacts .header-phone {
+    font-weight: var(--fw-strong);
+  }
+
+  /* Email — крупнее прежних 13 px: строчные буквы при том же кегле визуально меньше цифр телефона */
+  .site-nav .header-contacts .header-email {
+    color: var(--muted);
+    font-size: var(--fs-base);
+    font-weight: var(--fw-medium);
+  }
+
+  /* У правого края шапки меню раскрывается влево — не выходит за экран */
+  .email-menu {
+    right: 0;
+    left: auto;
+  }
+
+  /* Значок — компактнее строки меню и не меняет высоту колонки контактов; подсказка — к правому краю */
+  .header-copy {
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-block: -0.25rem;
+  }
+
+  .header-copy svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .header-email-wrap .copy-status {
+    right: 0;
+    left: auto;
+  }
+
+  .site-nav .header-contacts a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--brand);
+  }
+}
+
+@media (min-width: 1024px) {
+  .header-contacts {
+    display: flex;
+  }
+}
+
+/* Сцена сборки стенда — неподвижный фон всей главной.
+   Кадр выбирает JS по прокрутке всей страницы: вверху пустая площадка,
+   внизу готовый стенд. Весь контент прокручивается поверх сцены. */
+.scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--hall);
+  pointer-events: none;
+}
+
+/* Кадры показываются как есть: без фильтров и вуалей поверх */
+.scene-canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* До загрузки кадров — собранный стенд: с него начинается страница */
+  background: var(--hall) url("../img/stand-video/1280/frame-127.webp") center / cover no-repeat;
+}
+
+/* Фоновое видео — как кадры прежней сцены: весь экран, пропорции без искажения (cover).
+   Пока видео грузится (и при уменьшении движения) виден poster — его первый кадр */
+.scene-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Петля pre-video.mp4 — над холстом, только в самом верху страницы. Прозрачность задаёт main.js
+   по прокрутке; без него (нет JavaScript, уменьшение движения) петли не видно — прежняя сцена.
+   Во весь экран, без масок и подложек; стенд в кадре справа (≈ 46–94 % ширины) — видео прижато
+   к правому краю, обрезается только пустой зал слева. Высота — не больше 91,5vw: иначе на узком
+   экране обрезался бы стенд (его 48 % ширины кадра должны поместиться в экран) */
+.scene-loop {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: min(100%, 91.5vw);
+  object-fit: cover;
+  object-position: 100% 50%;
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene-loop {
+    display: none;
+  }
+}
+
+/* Кадры сцены светлые (белый зал), прежние были тёмными: при data-scene-light затемнение под
+   текстом на сцене плотнее, иначе белый текст на светлом зале не читается; зал за холстом светлый.
+   Уберёте признак (прежние кадры) — правила перестанут действовать сами */
+body:has([data-scene-light]) .scene {
+  background: var(--hall-light);
+}
+
+/* Кадры video.mp4 — в ракурсе петли: холст стоит там же, где петля (.scene-loop), и стенд петли при
+   растворении ложится на стенд кадров. Заглушка до первой отрисовки — так же прижата вправо */
+body:has([data-scene-light]) .scene-canvas {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: min(100%, 91.5vw);
+  object-position: 100% 50%;
+  /* Сдвиг и растушёвка края — у прежних тёмных кадров на широком экране; светлым не нужны */
+  transform: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+  background-color: var(--hall-light);
+  background-position: 100% 50%;
+}
+
+body:has([data-scene-light]) {
+  --scene-veil: linear-gradient(90deg, rgb(var(--shade) / 0.82), rgb(var(--shade) / 0.6) 40%, rgb(var(--shade) / 0.2) 72%, rgb(var(--shade) / 0));
+  --scene-veil-narrow: rgb(var(--shade) / 0.74);
+}
+
+/* Узкий экран: заглушка холста до первой отрисовки — из облегчённого набора, как и сами кадры */
+@media (max-width: 859px) {
+  body:has([data-scene-light]) .scene-canvas {
+    background-image: url("../img/stand-video/960/frame-127.webp");
+  }
+}
+
+/* Без JavaScript анимации нет — показываем собранный стенд */
+@media (scripting: none) {
+  .scene-canvas {
+    background-image: url("../img/stand-video/1280/frame-127.webp");
+  }
+}
+
+/* Контент — отдельный слой над сценой */
+main,
+.site-footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* Первый экран: только заголовок поверх сцены, без собственной высоты прокрутки.
+   На телефоне чуть ниже экрана, чтобы снизу показывался следующий блок.
+   Без подложек: видео во весь экран, слева в кадре светлый зал — текст на нём тёмный. Где стенд
+   заходит под текст (экран уже 2 : 1), буквы держит тонкий светлый ореол по контуру, а не
+   затемнение кадра */
+.hero {
+  --on-scene: var(--ink);
+  --on-scene-soft: var(--ink-soft);
+  --on-scene-line: rgb(var(--shade) / 0.22);
+  --hero-dim-line: rgb(var(--shade) / 0.5);
+  --hero-halo: 0 0 0.375rem rgb(255 255 255 / 0.85), 0 0 1rem rgb(255 255 255 / 0.55);
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: flex-end;
+  min-height: 82vh;
+  min-height: 82svh;
+  /* Снизу — запас под плавающую кнопку «Связаться»: пункты под кнопками первого экрана не уходят под неё */
+  padding: calc(var(--header-h) + var(--space-6)) var(--gutter) max(var(--space-7), var(--fab-clearance));
+  color: var(--on-scene);
+}
+
+/* Вторичная кнопка — тёмный контур на светлой полупрозрачной заливке (читается и над стендом);
+   при наведении — тёмная, текст светлый */
+.hero .btn-secondary {
+  background: rgb(255 255 255 / 0.7);
+}
+
+.hero .btn-secondary:hover {
+  background: var(--on-scene);
+  color: var(--on-dark);
+}
+
+/* Ширина растёт с экраном вместе с заголовком — на большом мониторе он остаётся в три строки */
+.hero-copy {
+  max-width: max(46rem, 48vw);
+  text-shadow: var(--hero-halo);
+}
+
+/* Указатель прокрутки: на телефоне его роль играет край следующего блока внизу экрана,
+   поэтому стрелка только на широких экранах. Гаснет с первых пикселей прокрутки */
+.hero-scroll {
+  display: none;
+}
+
+@media (min-width: 860px) {
+  .hero-scroll {
+    position: absolute;
+    bottom: var(--space-6);
+    left: 50%;
+    display: block;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-left: -0.75rem;
+    color: var(--on-scene-soft);
+    opacity: calc(1 - 4 * var(--hero-exit, 0));
+    pointer-events: none;
+  }
+
+  .hero-scroll svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    /* Стрелка тёмная, как текст первого экрана, — светлый ореол по контуру */
+    filter: drop-shadow(0 0 0.25rem rgb(255 255 255 / 0.85));
+  }
+}
+
+/* Заголовок — главный графический элемент: плотный, крупный, строки выровнены по длине
+   (тире в тексте склеено с предыдущим словом в шаблоне, строка с него не начинается) */
+.hero-title {
+  max-width: 11em;
+  font-size: var(--fs-hero);
+  font-weight: var(--fw-display);
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+/* Подзаголовок — подпись под размерной линией, как на чертеже стенда */
+.hero-lead {
+  position: relative;
+  max-width: 34ch;
+  text-wrap: balance;
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  color: var(--on-scene);
+  font-size: var(--fs-md);
+  font-weight: var(--fw-text);
+  line-height: 1.35;
+}
+
+.hero-lead::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: min(100%, 22rem);
+  height: 0.5625rem;
+  border-inline: 1px solid var(--hero-dim-line);
+  background: linear-gradient(var(--hero-dim-line), var(--hero-dim-line)) center / 100% 1px no-repeat;
+  transform-origin: left center;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+  text-shadow: none;
+}
+
+/* На телефоне обе кнопки встают в один ряд, если помещаются; иначе — каждая на всю ширину */
+.hero-actions .btn {
+  flex: 1 1 auto;
+  min-height: var(--tap);
+  padding-inline: var(--space-3);
+}
+
+/* Строка фактов под кнопками: мелко, без плашек. Точка стоит перед каждым пунктом,
+   а не между ними, — при переносе на телефоне строка не начинается с разделителя */
+.hero-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  max-width: 40rem;
+  margin: var(--space-6) 0 0;
+  padding: var(--space-4) 0 0;
+  border-top: 1px solid var(--on-scene-line);
+  list-style: none;
+  color: var(--on-scene-soft);
+  font-size: var(--fs-sm);
+}
+
+.hero-facts li::before {
+  content: "";
+  display: inline-block;
+  width: 0.3125rem;
+  height: 0.3125rem;
+  margin: 0 var(--space-2) 0.15em 0;
+  border-radius: 50%;
+  background: var(--brand);
+  vertical-align: middle;
+}
+
+@media (min-width: 860px) {
+  .hero {
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: calc(var(--header-h) + var(--space-7)) var(--gutter) calc(var(--space-8) + var(--space-6));
+  }
+
+  .hero-lead {
+    font-size: var(--fs-lg);
+  }
+
+  .hero-actions {
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+
+  .hero-actions .btn {
+    flex: 0 1 auto;
+    min-height: 3.5rem;
+    padding-inline: var(--space-6);
+  }
+}
+
+/* Линия монтажа — тонкая полоса по нижней кромке шапки: заливка показывает
+   долю прокрутки, ничего не закрывает и не требует места в раскладке */
+.gauge {
+  position: fixed;
+  inset: calc(var(--header-h) + env(safe-area-inset-top, 0px)) 0 auto;
+  z-index: 40;
+  height: var(--gauge-h);
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.has-sheet .gauge {
+  opacity: 0;
+}
+
+.gauge-track {
+  --progress: 0;
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background: var(--gauge-track);
+}
+
+/* Заливка во всю ширину сдвигается влево на недостающую долю — без перерасчёта раскладки */
+.gauge-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--brand);
+  transform: translateX(calc((var(--progress) - 1) * 100%));
+  will-change: transform;
+}
+
+/* Широкий экран: стенд стоит справа, слева — тёмный зал под заголовком, текст не ложится
+   на стенд. Сдвигается только холст; кадры и их смена по прокрутке прежние. Левый край
+   холста растворяется в цвет зала (--hall), шва нет */
+@media (min-width: 1024px) and (min-aspect-ratio: 4/3) {
+  .scene-canvas {
+    transform: translateX(14vw);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 16%);
+    mask-image: linear-gradient(90deg, transparent, #000 16%);
+  }
+}
+
+/* Портретный экран: стенд целиком в верхней части, а не обрезанная середина кадра */
+@media (max-aspect-ratio: 4/5) {
+  .scene-canvas,
+  .scene-video {
+    position: absolute;
+    top: 16svh;
+    left: 50%;
+    width: 175vw;
+    max-width: none;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    transform: translateX(-50%);
+    -webkit-mask-image: linear-gradient(transparent, #000 12%, #000 82%, transparent);
+    mask-image: linear-gradient(transparent, #000 12%, #000 82%, transparent);
+  }
+
+  /* У видео своя пропорция (1618 × 1080), без неё стенд обрезался бы сверху и снизу */
+  .scene-video {
+    aspect-ratio: 1618 / 1080;
+  }
+
+  /* Петля и светлые кадры — полосой во всю ширину сразу под шапкой (высота 91,5vw — стенд целиком,
+     ≈ 0–89vw). Ниже — пол того же тона (--hall-light): нижний край кадра коротко растворяется в него,
+     чтобы не было шва; по бокам и сверху краёв нет */
+  .scene-loop,
+  body:has([data-scene-light]) .scene-canvas {
+    top: var(--header-h);
+    left: auto;
+    right: 0;
+    width: 100%;
+    height: 91.5vw;
+    aspect-ratio: auto;
+    transform: none;
+    -webkit-mask-image: linear-gradient(#000 88%, transparent);
+    mask-image: linear-gradient(#000 88%, transparent);
+  }
+
+  /* Первый экран на портретном экране — сначала стенд, потом текст: стенд в верхней части
+     (≈ 91vw высотой) в естественных цветах, текст начинается под ним, на светлом полу. Высота
+     первого экрана растёт вместе с текстом, кнопки при этом остаются на первом экране телефона */
+  body:has([data-scene-light]) .hero {
+    padding-top: calc(var(--header-h) + 84vw);
+  }
+}
+
+/* Секции прозрачные: идут поверх сцены, стенд виден между блоками.
+   Заголовок с подводкой — на светлой панели, чтобы читался на любом кадре */
+
+.section {
+  position: relative;
+  isolation: isolate;
+  padding-block: var(--space-section);
+  color: var(--on-scene);
+}
+
+/* Затемнение секции — под текстом, а не плашка: на телефоне ровное, на широком экране
+   слева, где стоят заголовки. Сверху и снизу без растушёвки: рядом «бумажные» секции, и
+   растворение в прозрачность читалось на их границе как грязная полоса */
+.section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--scene-veil-narrow);
+  pointer-events: none;
+}
+
+@media (min-width: 860px) {
+  .section::before {
+    background: var(--scene-veil);
+  }
+}
+
+/* Заголовок секции стоит прямо на сцене, как текст первого экрана */
+.section-head {
+  max-width: 40rem;
+  margin-bottom: var(--space-7);
+}
+
+.section-title {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-display);
+  letter-spacing: -0.03em;
+  text-shadow: var(--text-on-scene);
+}
+
+.section .prose {
+  text-shadow: var(--text-on-scene);
+}
+
+.section-lead {
+  max-width: 38rem;
+  margin-top: var(--space-4);
+  color: var(--on-scene-soft);
+  text-shadow: var(--text-on-scene);
+  font-size: var(--fs-md);
+  line-height: 1.45;
+}
+
+/* «Бумага» — секции с реальными работами и конфигуратором: сплошной светлый фон закрывает
+   сцену, и между ними сцена видна только в «окнах» (первый экран, этапы, финальный блок).
+   Компоненты написаны на токенах сцены, поэтому здесь переопределены токены, а не правила */
+.section.is-paper {
+  --on-scene: var(--ink);
+  --on-scene-soft: var(--muted);
+  --on-scene-line: var(--line-strong);
+  --text-on-scene: none;
+  --text-on-scene-soft: none;
+  --brand-on-scene: var(--brand-text);
+  --smoke: var(--surface);
+  --smoke-edge: var(--line);
+  --smoke-blur: none;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.section.is-paper::before {
+  content: none;
+}
+
+/* Конфигуратор и отзывы — компактнее остальных секций */
+.section.configurator,
+.section.reviews {
+  padding-block: var(--space-compact);
+}
+
+/* Проекты — короткое знакомство с работами между частями сцены: самые узкие поля */
+.section.projects {
+  padding-block: clamp(2rem, 1.6rem + 1.2vw, 3rem);
+}
+
+/* «Реализовано», отзывы и конфигуратор — та же бумага, но полупрозрачная: сквозь неё видна сборка стенда
+   (сцена лежит под main, секция — свой слой, z-index не меняется). Прозрачна только подложка: текст,
+   ссылки, фото, схема и поля остаются непрозрачными. Размытие гасит мелкие детали кадра под текстом */
+.section.projects.is-paper,
+.section.reviews.is-paper,
+.section.configurator.is-paper {
+  background: rgb(var(--paper-rgb) / var(--paper-sheer-alpha));
+  -webkit-backdrop-filter: blur(var(--paper-sheer-blur));
+  backdrop-filter: blur(var(--paper-sheer-blur));
+  --text-on-scene: var(--text-on-sheer);
+}
+
+/* Подписи прямо на подложке (не на карточке со своим фоном) — с тем же ореолом, что заголовки.
+   Кнопки, поля и лист формы его не получают: у них сплошной фон */
+.is-paper .projects-all,
+.is-paper .project-body,
+.is-paper .review-caption,
+.is-paper .review-description {
+  text-shadow: var(--text-on-scene);
+}
+
+/* Граница «Реализовано» → конфигуратор: при одинаковой подложке секции сливались. Конфигуратор —
+   плотнее (токен общий с листом формы .cfg-form, она плотнеет вместе с ним) и с тонкой линией сверху.
+   Правило ниже для prefers-reduced-transparency идёт позже и по-прежнему делает подложку сплошной */
+.section.configurator.is-paper {
+  --paper-sheer-alpha: var(--paper-config-alpha);
+  border-top: 1px solid var(--line-strong);
+}
+
+/* Система просит уменьшить прозрачность — подложка сплошная. Без поддержки размытия она плотнее
+   (--paper-sheer-alpha в общем блоке @supports в конце файла) */
+@media (prefers-reduced-transparency: reduce) {
+  .section.projects.is-paper,
+  .section.reviews.is-paper,
+  .section.configurator.is-paper {
+    --paper-sheer-alpha: 1;
+  }
+}
+
+.is-paper .btn-secondary {
+  background: transparent;
+}
+
+/* Тихая кнопка на полупрозрачной подложке («Другие видео-отзывы», «Обсудить мой проект») — на своей
+   почти сплошной бумаге: текст не теряется над тёмными деталями стенда */
+.is-paper .btn-quiet {
+  background: rgb(var(--paper-rgb) / 0.88);
+}
+
+.is-paper .btn-secondary:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* Видеоотзывы — пока заглушки будущих роликов: кадр 16:9 на сплошном белом листе с тонкой линией,
+   значок воспроизведения и подпись. Это не плеер: курсор, наведение и фокус не меняются. Внизу кадра —
+   дорожка плеера с коротким фирменным отрезком, без градиентов и теней.
+   Одна колонка на телефоне, две на планшете (третья — следующим рядом), три в ряд на компьютере */
+.reviews .section-head {
+  margin-bottom: var(--space-5);
+}
+
+.review-grid {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 640px) {
+  .review-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+}
+
+@media (min-width: 1024px) {
+  .review-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.review-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.review-media {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  aspect-ratio: 16 / 9;
+  padding: var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  text-align: center;
+}
+
+.review-media::after {
+  content: "";
+  position: absolute;
+  inset: auto var(--space-4) var(--space-4);
+  height: 2px;
+  border-left: 2.5rem solid var(--brand);
+  border-radius: var(--radius-pill);
+  background: var(--line);
+}
+
+.review-play {
+  width: clamp(2.75rem, 2.25rem + 1.5vw, 3.5rem);
+  height: clamp(2.75rem, 2.25rem + 1.5vw, 3.5rem);
+}
+
+.review-play circle {
+  fill: var(--paper);
+  stroke: var(--line-strong);
+  stroke-width: 1.5;
+}
+
+.review-play path {
+  fill: var(--brand);
+}
+
+.review-soon {
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+}
+
+.review-caption {
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+}
+
+/* Карточка с роликом: та же рамка 16:9; до нажатия вся площадь — ссылка «Смотреть видео»,
+   после — плеер RuTube во весь кадр (main.js, initVideoReviews) */
+.review-media.is-video {
+  padding: 0;
+  overflow: hidden;
+}
+
+.review-media::after {
+  pointer-events: none;
+}
+
+.review-media.is-playing::after {
+  display: none;
+}
+
+.review-play-link {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  border-radius: inherit;
+  color: var(--ink);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+  text-decoration: none;
+}
+
+.review-play-link[hidden] {
+  display: none;
+}
+
+.review-play-link .review-play circle {
+  transition: fill 0.15s, stroke 0.15s;
+}
+
+.review-play-link .review-play path {
+  transition: fill 0.15s;
+}
+
+.review-play-link:hover .review-play circle {
+  fill: var(--brand);
+  stroke: var(--brand);
+}
+
+.review-play-link:hover .review-play path {
+  fill: var(--surface);
+}
+
+.review-play-link:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: -3px;
+}
+
+/* С обложкой: картинка RuTube во весь кадр, поверх — только значок; подпись «Смотреть видео»
+   остаётся для экранных дикторов в aria-label ссылки */
+.review-thumb {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+}
+
+.review-play-link .review-play {
+  position: relative;
+}
+
+.has-thumb .review-play-label {
+  display: none;
+}
+
+.review-media.has-thumb::after {
+  display: none;
+}
+
+/* Плеер RuTube (iframe) или загруженное видео (<video>): вертикальное или квадратное видео — целиком, с полями */
+.review-player {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: var(--ink);
+  object-fit: contain;
+}
+
+.review-video-error {
+  padding: var(--space-4);
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+}
+
+.review-description {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  line-height: 1.45;
+}
+
+.reviews-more-row {
+  margin-top: var(--space-5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .review-play-link .review-play circle,
+  .review-play-link .review-play path {
+    transition: none;
+  }
+}
+
+.reviews-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+  margin-top: var(--space-6);
+  font-size: var(--fs-base);
+}
+
+/* Реализованные проекты — сразу после сцены, на бумаге: короткое знакомство с работами,
+   а не отдельная страница. Шапка — одна строка (заголовок с пояснением слева, ссылка на все
+   проекты справа), работы — одна лента: на компьютере все в ряд, на телефоне и планшете
+   лента листается вбок, следующее фото выглядывает из-за края. Фото — главный объект: без рамок,
+   теней и масок; подпись — название и строка фактов. Вся карточка — одна кнопка, открывающая галерею */
+.projects-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-6);
+  margin-bottom: var(--space-5);
+}
+
+.projects-head .section-title {
+  font-size: clamp(1.75rem, 1.4rem + 1.3vw, 2.5rem);
+  line-height: 1.1;
+}
+
+.projects-head .section-lead {
+  margin-top: var(--space-2);
+  font-size: var(--fs-base);
+}
+
+.projects-head > div {
+  max-width: 40rem;
+}
+
+.projects-all {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  color: var(--ink);
+  font-size: var(--fs-md);
+  font-weight: var(--fw-strong);
+  text-decoration: underline;
+  text-decoration-color: var(--brand);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.35em;
+}
+
+.projects-all:hover {
+  color: var(--brand-text);
+}
+
+.projects-count {
+  display: inline-block;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Лента: колонки одинаковые, без скрытой «второй страницы» по вертикали */
+.project-grid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.project-card {
+  min-width: 0;
+}
+
+.project-open {
+  display: grid;
+  gap: var(--space-3);
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.project-media {
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-media);
+  background: var(--line);
+}
+
+.project-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s var(--ease);
+}
+
+.project-open:hover .project-media img {
+  transform: scale(1.03);
+}
+
+.project-open:focus-visible {
+  outline: none;
+}
+
+.project-open:focus-visible .project-media {
+  outline: 3px solid var(--brand);
+  outline-offset: 4px;
+}
+
+/* Заглушка: штриховка, как незаполненная зона на чертеже, и явная подпись «временная» */
+.project-placeholder {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  border: 1px dashed var(--line-strong);
+  border-radius: inherit;
+  background: repeating-linear-gradient(135deg, var(--line) 0 1px, transparent 1px 14px), var(--surface);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+}
+
+.project-body {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-1);
+}
+
+/* Выставка — главное в подписи; длинное название переносится по словам, не распирая карточку */
+.project-event {
+  max-width: 100%;
+  font-size: var(--fs-project-event);
+  font-weight: var(--fw-display);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+/* Компания — первая в строке фактов: тем же размером, но тоном текста, а не приглушённым */
+.project-title {
+  color: var(--ink);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-text);
+}
+
+.project-title.is-empty {
+  color: var(--muted);
+}
+
+/* Факты — через тонкую вертикальную черту, цифры моноширинные: читаются одним взглядом */
+.project-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.project-facts > span + span {
+  padding-left: var(--space-2);
+  border-left: 1px solid var(--line-strong);
+}
+
+.project-more {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-2);
+  color: var(--ink);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+  text-decoration: underline;
+  text-decoration-color: var(--brand);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+}
+
+.project-open:hover .project-more {
+  text-decoration-thickness: 2px;
+}
+
+.project-video {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+}
+
+.project-video .play-icon {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+
+/* Телефон и планшет: лента листается вбок от края до края экрана, с привязкой к карточке;
+   вертикальная прокрутка страницы (и сцены) проходит сквозь неё. Все четыре в ряд — от 1200 px,
+   уже карточка слишком узкая для фото и строки фактов */
+@media (max-width: 1199px) {
+  .project-grid {
+    grid-auto-columns: min(80%, 22rem);
+    gap: var(--space-4);
+    margin-inline: calc(-1 * var(--gutter));
+    padding-inline: var(--gutter);
+    padding-bottom: var(--space-2);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+  }
+
+  .project-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .project-card {
+    scroll-snap-align: start;
+  }
+}
+
+/* Конфигуратор */
+
+/* Форма — единственная панель блока: дымчатое стекло, светлые подписи. Поля, чипсы
+   и кнопки остаются сплошными контролами — на тёмном стекле они видны сразу */
+.cfg-form {
+  padding: var(--space-5);
+  border: 1px solid var(--smoke-edge);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(160deg, rgb(255 255 255 / 0.08), rgb(255 255 255 / 0) 40%), var(--smoke);
+  box-shadow: 0 1.5rem 3rem rgb(var(--shade) / 0.25), inset 0 1px 0 rgb(255 255 255 / 0.12);
+  -webkit-backdrop-filter: var(--smoke-blur);
+  backdrop-filter: var(--smoke-blur);
+  color: var(--on-scene);
+}
+
+@media (min-width: 640px) {
+  .cfg-form {
+    padding: var(--space-6);
+  }
+}
+
+.cfg-layout {
+  display: grid;
+  gap: var(--space-5);
+}
+
+/* Панель заголовка по ширине плана под ней */
+.cfg-intro .section-head {
+  max-width: 26rem;
+}
+
+/* Заголовок и схема — плотно: схема сразу под подводкой */
+.cfg-intro .section-head {
+  margin-bottom: 0;
+}
+
+.cfg-plan {
+  max-width: 21rem;
+  margin: var(--space-4) 0 0;
+}
+
+/* План: одна клетка = 1 × 1 м, геометрию считает stand-plan.js */
+.cfg-plan svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--smoke-edge);
+  border-radius: var(--radius-md);
+  /* Чертёж на том же дымчатом стекле, что и форма: стены и подписи светлые */
+  background: var(--smoke);
+  -webkit-backdrop-filter: var(--smoke-blur);
+  backdrop-filter: var(--smoke-blur);
+}
+
+.plan-floor {
+  fill: rgb(240 70 36 / 0.14);
+  stroke: var(--brand);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.plan-grid {
+  fill: none;
+  stroke: rgb(255 117 82 / 0.38);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.plan-wall {
+  fill: none;
+  stroke: var(--on-scene);
+  stroke-width: 5;
+  stroke-linecap: square;
+}
+
+.plan-size {
+  fill: var(--on-scene-soft);
+  font-size: 12px;
+  font-weight: var(--fw-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Масштаб сетки — в верхнем поле плана, над полом */
+.plan-scale {
+  fill: var(--on-scene-soft);
+  font-size: 12px;
+  font-weight: var(--fw-text);
+}
+
+.cfg-plan-caption {
+  margin-top: var(--space-2);
+  color: var(--on-scene-soft);
+  text-shadow: var(--text-on-scene);
+  font-size: var(--fs-sm);
+}
+
+.cfg-form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+@media (min-width: 900px) {
+  .cfg-layout {
+    grid-template-columns: 5fr 7fr;
+    align-items: start;
+    gap: var(--space-6);
+  }
+
+  .cfg-intro {
+    position: sticky;
+    top: calc(var(--header-h) + var(--space-6));
+  }
+}
+
+/* Поля форм */
+
+.field {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.field > label,
+.field legend,
+.field-row label {
+  display: block;
+  margin-bottom: var(--space-2);
+  padding: 0;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+}
+
+.field-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.field-optional {
+  color: var(--muted);
+  font-weight: var(--fw-text);
+}
+
+.field input:not([type="range"], [type="radio"], [type="checkbox"]),
+.field textarea {
+  width: 100%;
+  min-height: var(--tap);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-size: var(--fs-base);
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.field input:hover,
+.field textarea:hover {
+  border-color: var(--muted);
+}
+
+.field input:focus-visible,
+.field textarea:focus-visible {
+  border-color: var(--ink);
+  outline-offset: 0;
+}
+
+.field input:user-invalid,
+.field textarea:user-invalid {
+  border-color: var(--brand-text);
+}
+
+.cfg-area-value {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Длина и ширина: строка «подпись — степпер», без рамок */
+.cfg-size {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.cfg-dim {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin: 0;
+}
+
+.cfg-dim label {
+  font-size: var(--fs-base);
+  font-weight: var(--fw-strong);
+}
+
+.cfg-area {
+  margin-top: var(--space-2);
+}
+
+.cfg-area span {
+  color: var(--on-scene-soft);
+}
+
+.cfg-form .field-optional {
+  color: var(--on-scene-soft);
+}
+
+/* Подсказка о неверном размере; пустая — без высоты, но остаётся живой областью.
+   Текст светлый (форма на дымчатом стекле), ошибку отмечает красная черта слева */
+.cfg-hint {
+  margin: 0;
+  color: var(--on-scene);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+}
+
+/* Пустая подсказка не добавляет отступ сетки под площадью */
+.cfg-hint:empty {
+  margin-top: calc(-1 * var(--space-2));
+}
+
+.cfg-hint:not(:empty) {
+  padding-left: var(--space-3);
+  border-left: 3px solid var(--brand);
+}
+
+.stepper:has(.stepper-input[aria-invalid="true"]) {
+  box-shadow: inset 0 0 0 1px var(--brand-text);
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+}
+
+.stepper-btn {
+  display: grid;
+  place-items: center;
+  width: var(--tap-min);
+  height: var(--tap-min);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--ink);
+  font-size: var(--fs-md);
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.stepper-btn:hover:not(:disabled) {
+  background: var(--paper);
+}
+
+.stepper-btn:disabled {
+  color: var(--line-strong);
+  cursor: default;
+}
+
+/* Ширина — под «120,75» */
+.field .stepper input.stepper-input {
+  width: 4.25rem;
+  min-height: var(--tap-min);
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-strong);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  appearance: textfield;
+}
+
+.stepper-input::-webkit-inner-spin-button,
+.stepper-input::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+.stepper-unit {
+  padding: 0 var(--space-2) 0 var(--space-1);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chip {
+  position: relative;
+  cursor: pointer;
+}
+
+/* Четыре типа стенда — ровной сеткой: 2 × 2 на телефоне и в узкой колонке, в ряд — где помещаются */
+.cfg-types {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cfg-types .chip span {
+  justify-content: center;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .cfg-types {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1149px) {
+  .cfg-types {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.chip input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.chip span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.chip:hover span {
+  border-color: var(--ink);
+}
+
+.chip input:checked + span {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.chip input:focus-visible + span {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Уровень сложности — три кнопки в ряд, где помещается «Индивидуальный», иначе столбцом
+   (без неровного «два плюс один»); описание выбранного — под ними */
+.cfg-levels {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 640px) and (max-width: 899px), (min-width: 1150px) {
+  .cfg-levels {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.cfg-levels .chip span {
+  justify-content: center;
+  width: 100%;
+}
+
+.cfg-level-text {
+  margin: var(--space-2) 0 0;
+  color: var(--on-scene-soft);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+}
+
+/* Дополнительные опции — свёрнутая строка под тонкой линией; раскрывается без анимации */
+.cfg-more {
+  border-top: 1px solid var(--on-scene-line);
+  border-bottom: 1px solid var(--on-scene-line);
+}
+
+.cfg-more-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+  list-style: none;
+  cursor: pointer;
+}
+
+.cfg-more-summary::-webkit-details-marker {
+  display: none;
+}
+
+/* «+» у свёрнутого блока, «−» у раскрытого */
+.cfg-more-summary::after {
+  content: "+";
+  margin-left: auto;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-text);
+  line-height: 1;
+}
+
+.cfg-more[open] .cfg-more-summary::after {
+  content: "−";
+}
+
+.cfg-more-summary:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.cfg-more-body {
+  padding-bottom: var(--space-4);
+}
+
+/* Опции — по одной в строке на телефоне, по две — где помещаются; кнопки одной высоты */
+.cfg-extras {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.cfg-extras .chip span {
+  width: 100%;
+  height: 100%;
+}
+
+@media (min-width: 640px) {
+  .cfg-extras {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Выбранная опция — галочка перед названием вдобавок к заливке */
+.chip-check input:checked + span::before {
+  content: "✓";
+  margin-right: var(--space-2);
+}
+
+/* Ориентир бюджета — отдельная карточка над кнопкой: сначала параметры, потом итог крупно */
+.cfg-result {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--on-scene-line);
+  border-radius: var(--radius-md);
+  background: var(--smoke);
+  color: var(--on-scene);
+}
+
+.cfg-result[hidden] {
+  display: none;
+}
+
+.cfg-result-title {
+  margin: 0;
+  font-size: var(--fs-base);
+  font-weight: var(--fw-strong);
+}
+
+.cfg-result-list {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+}
+
+.cfg-result-list div,
+.cfg-total {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0 var(--space-4);
+}
+
+.cfg-result-list dt {
+  color: var(--on-scene-soft);
+  font-size: var(--fs-sm);
+}
+
+.cfg-result-list dd {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.cfg-total {
+  margin: 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--on-scene-line);
+  font-weight: var(--fw-strong);
+}
+
+.cfg-total-value {
+  color: var(--brand-on-scene);
+  font-size: var(--fs-lg);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.cfg-warning {
+  margin: 0;
+  padding-left: var(--space-3);
+  border-left: 3px solid var(--brand);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+}
+
+.cfg-warning[hidden] {
+  display: none;
+}
+
+.cfg-note {
+  margin: 0;
+  color: var(--on-scene-soft);
+  font-size: var(--fs-xs);
+  line-height: 1.45;
+}
+
+.cfg-form .btn {
+  justify-self: start;
+}
+
+/* Главная кнопка блока и обещание под ней: что будет после заявки */
+.cfg-submit {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-2);
+}
+
+.cfg-submit-note {
+  max-width: 30rem;
+  color: var(--on-scene-soft);
+  font-size: var(--fs-sm);
+}
+
+/* На бумаге форма — белый лист с тонкой линией; контролы внутри получают свою границу,
+   иначе белое поле сливается с белой формой. Лист полупрозрачный, как подложка секции
+   (--paper-sheer-alpha): сборка стенда видна и за формой, а поля и кнопки — со своим сплошным фоном */
+.is-paper .cfg-form {
+  background: rgb(255 255 255 / var(--paper-sheer-alpha));
+  padding: var(--space-5);
+  border-radius: var(--radius-md);
+  box-shadow: none;
+}
+
+.is-paper .cfg-form .stepper {
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+
+.is-paper .cfg-plan svg {
+  border-radius: var(--radius-md);
+}
+
+/* Выбранный тип на тёмном стекле — фирменным цветом: тёмная заливка там терялась бы */
+.cfg-form .chip input:checked + span {
+  border-color: var(--brand-strong);
+  background: var(--brand-strong);
+  color: #fff;
+}
+
+/* Контролы со своим белым фоном — тёмный текст явно, иначе он наследует светлый цвет формы */
+.cfg-form .chip span,
+.cfg-form .stepper,
+.cfg-form .field input,
+.cfg-form .field textarea {
+  color: var(--ink);
+}
+
+/* Частые вопросы — последний блок перед подвалом, на сплошной «бумаге». Список вопросов
+   с тонкими линиями; вся строка вопроса — кнопка, «+» у открытого становится «−» на фирменном круге.
+   Ответ раскрывается плавным ростом высоты; скрыт только при .is-ready (ставит main.js) —
+   без скрипта ответы видны. На широком экране заголовок слева, вопросы справа */
+.section.faq {
+  padding-block: var(--space-compact);
+}
+
+.faq-layout {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.faq .section-head {
+  margin-bottom: 0;
+}
+
+.faq-list {
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid var(--line-strong);
+  list-style: none;
+}
+
+.faq-item {
+  border-top: 1px solid var(--line-strong);
+}
+
+.faq-q {
+  margin: 0;
+  font-size: inherit;
+}
+
+.faq-toggle {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  min-height: var(--tap);
+  padding: var(--space-4) 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--fs-base);
+  font-weight: var(--fw-strong);
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+}
+
+.faq-question {
+  transition: color 0.2s;
+}
+
+.faq-toggle:hover .faq-question,
+.faq-item.is-open .faq-question {
+  color: var(--brand-text);
+}
+
+.faq-icon {
+  position: relative;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  color: var(--ink);
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.faq-icon::before,
+.faq-icon::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.625rem;
+  height: 1.5px;
+  border-radius: 1px;
+  background: currentColor;
+  transform: translate(-50%, -50%);
+  transition: transform 0.25s var(--ease);
+}
+
+.faq-icon::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.faq-toggle:hover .faq-icon {
+  border-color: var(--brand);
+}
+
+.faq-item.is-open .faq-icon {
+  border-color: var(--brand-strong);
+  background: var(--brand-strong);
+  color: var(--surface);
+}
+
+.faq-item.is-open .faq-icon::after {
+  transform: translate(-50%, -50%);
+}
+
+.faq-a-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.faq-a p {
+  max-width: 62ch;
+  margin: 0;
+  padding: 0 var(--space-6) var(--space-4) 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.faq-list.is-ready .faq-a {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition: grid-template-rows 0.3s var(--ease), visibility 0s linear 0.3s;
+}
+
+.faq-list.is-ready .faq-item.is-open .faq-a {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition: grid-template-rows 0.3s var(--ease), visibility 0s;
+}
+
+@media (min-width: 860px) {
+  .faq-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    align-items: start;
+    gap: var(--space-7);
+  }
+
+  .faq-toggle {
+    font-size: var(--fs-md);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-a,
+  .faq-list.is-ready .faq-a,
+  .faq-list.is-ready .faq-item.is-open .faq-a,
+  .faq-icon,
+  .faq-icon::before,
+  .faq-icon::after,
+  .faq-question {
+    transition: none;
+  }
+}
+
+/* Подвал */
+
+/* Финальный блок — третье «окно» в сцену: стенд здесь собран. Затемнение — то же, что у секций
+   на сцене (.section::before): на телефоне ровное, на широком экране слева под текстом. Без
+   вертикального перехода «прозрачно → темно»: под полупрозрачным конфигуратором он давал полосу */
+/* Снизу — не меньше запаса под плавающую кнопку «Связаться»: копирайт докручивается выше неё */
+.site-footer {
+  padding: var(--space-section) 0 max(calc(var(--space-7) + env(safe-area-inset-bottom, 0px)), var(--fab-clearance));
+  background: var(--scene-veil-narrow);
+  color: var(--on-scene);
+  text-shadow: var(--text-on-scene);
+}
+
+@media (min-width: 860px) {
+  .site-footer {
+    background: var(--scene-veil);
+  }
+}
+
+.footer-inner {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-5);
+}
+
+.footer-logo {
+  width: auto;
+  height: 3.5rem;
+  margin-bottom: var(--space-4);
+  color: var(--on-scene);
+}
+
+.footer-title {
+  max-width: 16ch;
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-display);
+  letter-spacing: -0.03em;
+}
+
+.footer-lead {
+  max-width: 38ch;
+  color: var(--on-scene-soft);
+  font-size: var(--fs-md);
+  line-height: 1.45;
+}
+
+.footer-contacts {
+  --copy-border: rgb(246 244 241 / 0.5);
+  --copy-bg: rgb(0 0 0 / 0.25);
+  --copy-tip-bg: var(--paper);
+  --copy-tip-fg: var(--ink);
+  display: grid;
+  gap: var(--space-4);
+  width: 100%;
+  margin-top: var(--space-5);
+  font-size: var(--fs-base);
+  font-style: normal;
+}
+
+.footer-contact {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.footer-contact-label {
+  color: var(--on-scene-soft);
+  font-size: var(--fs-xs);
+}
+
+.footer-contact a:not(.copy-btn) {
+  color: inherit;
+  text-decoration-color: var(--brand);
+  text-underline-offset: 0.2em;
+}
+
+@media (min-width: 860px) {
+  .footer-contacts {
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  }
+}
+
+/* «Мы в соцсетях»: подпись и строка небольших «таблеток» со значком и короткой подписью (ТГ, МАХ, ВК).
+   Подвал лежит на затемнённой сцене — рамка и текст светлые, как у остальных ссылок подвала */
+.footer-socials {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+  margin-top: var(--space-5);
+}
+
+.footer-socials-title {
+  color: var(--on-scene-soft);
+  font-size: var(--fs-xs);
+}
+
+.footer-social-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer-social {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-min);
+  padding: 0 var(--space-4) 0 var(--space-2);
+  border: 1px solid var(--on-scene-line);
+  border-radius: var(--radius-pill);
+  color: var(--on-scene);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+}
+
+.footer-social:hover {
+  border-color: var(--brand);
+}
+
+.footer-social:focus-visible {
+  border-color: var(--brand);
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
+}
+
+.footer-social .social-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-social {
+    transition: none;
+  }
+}
+
+.footer-copy {
+  margin-top: var(--space-7);
+  color: var(--on-scene-soft);
+  font-size: var(--fs-xs);
+}
+
+/* Плавающая кнопка «Связаться» — всегда в правом нижнем углу экрана: на любой прокрутке и поверх шторок
+   (выше шторки, ниже шапки; окна заявки и галереи — <dialog> в верхнем слое, они над ней). Меню открывается
+   над кнопкой и прижато к правому краю. Чтобы кнопка ничего не закрывала насовсем, у подвала и шторок снизу
+   запас --fab-clearance: последние строки докручиваются выше неё; фокус с клавиатуры за ней не прячется
+   (scroll-padding-bottom) */
+.fab {
+  position: fixed;
+  right: max(var(--gutter), calc(env(safe-area-inset-right, 0px) + var(--space-3)));
+  bottom: var(--fab-offset);
+  z-index: 46;
+}
+
+.fab-button {
+  gap: var(--space-2);
+  min-height: var(--fab-size);
+  padding: 0 var(--space-6) 0 var(--space-5);
+  border: 2px solid var(--fab-ring);
+  font-size: var(--fs-md);
+  box-shadow: 0 0.5rem 1.5rem rgb(var(--shade) / 0.3);
+  list-style: none;
+  cursor: pointer;
+}
+
+.fab-icon {
+  flex: none;
+  width: 1.375rem;
+  height: 1.375rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+
+.fab-button::-webkit-details-marker {
+  display: none;
+}
+
+.fab-button:active {
+  transform: none;
+}
+
+.fab-menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + var(--space-2));
+  width: max-content;
+  min-width: 13rem;
+  max-width: calc(100vw - 2 * var(--gutter));
+  padding: var(--space-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-lift);
+}
+
+.fab-list {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fab-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--tap);
+  padding: 0 var(--space-4) 0 var(--space-2);
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  font-weight: var(--fw-strong);
+  text-decoration: none;
+}
+
+.fab-item:hover {
+  background: var(--paper);
+}
+
+.fab-item:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: -3px;
+}
+
+.fab-item .social-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+/* Шторки: портфолио, о нас, контакты */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgb(var(--shade) / 0.55);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.sheet {
+  position: fixed;
+  top: calc(var(--header-h) + env(safe-area-inset-top, 0px));
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 45;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  /* Большая поверхность с длинными списками — стекло плотнее плашек */
+  --lg-alpha: 0.52;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(1.5rem);
+  transition: transform 0.4s var(--ease), opacity 0.25s, visibility 0s 0.4s;
+}
+
+.sheet.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: transform 0.4s var(--ease), opacity 0.25s;
+}
+
+.sheet:focus {
+  outline: none;
+}
+
+.sheet-bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--gutter);
+  /* Полоса заголовка шторки — сплошная, под ней прокручивается содержимое */
+  background: var(--paper);
+  box-shadow: 0 1px 0 var(--line);
+}
+
+.sheet-title {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-display);
+}
+
+.sheet-body {
+  padding: var(--space-6) var(--gutter) max(calc(var(--space-7) + env(safe-area-inset-bottom, 0px)), var(--fab-clearance));
+}
+
+.sheet-subtitle {
+  margin: var(--space-7) 0 var(--space-5);
+  font-size: var(--fs-md);
+  font-weight: var(--fw-strong);
+}
+
+@media (min-width: 860px) {
+  .sheet {
+    top: calc(var(--header-h) + var(--space-4));
+    right: auto;
+    bottom: auto;
+    left: 50%;
+    width: min(66rem, 100% - 2 * var(--gutter));
+    max-height: calc(100svh - var(--header-h) - var(--space-7));
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lift);
+    transform: translate(-50%, 1.5rem);
+  }
+
+  .sheet.is-open {
+    transform: translate(-50%, 0);
+  }
+
+  .sheet-bar,
+  .sheet-body {
+    padding-inline: var(--space-7);
+  }
+
+  .sheet-title {
+    font-size: var(--fs-xl);
+  }
+}
+
+/* Портфолио */
+
+/* Фильтры: компактная светлая панель над вкладками годов — три строки «подпись — переключатели».
+   Кнопки 40 px: удобно пальцу и не раздувают панель. Выбранное — красной рамкой и лёгкой
+   подложкой; подпись остаётся тёмной (белый текст на #FF0000 не читается) */
+/* Кнопка «Фильтры» над вкладками годов; число на ней — сколько фильтров выбрано */
+.pf-bar {
+  margin-bottom: var(--space-4);
+}
+
+.pf-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-min);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.pf-toggle:hover {
+  border-color: var(--ink);
+}
+
+.pf-toggle:active {
+  background: var(--paper);
+}
+
+.pf-toggle[aria-expanded="true"] {
+  border-color: var(--ink);
+  background: var(--paper);
+}
+
+.pf-toggle:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.pf-toggle-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+}
+
+/* Белый текст — на фирменном красном потемнее (4.6:1): на #FF0000 мелкая цифра не читается */
+.pf-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.3rem;
+  border-radius: var(--radius-pill);
+  background: var(--brand-strong);
+  color: #FFFFFF;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-strong);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Раскрытие: высота (0fr → 1fr), прозрачность и небольшой сдвиг, 0,3 с — длительность совпадает
+   с таймером закрытия в portfolio-filter.js. Свёрнутая панель — hidden и места не занимает */
+.pf-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transform: translateY(-0.375rem);
+  transition: grid-template-rows 0.3s var(--ease), opacity 0.25s, transform 0.3s var(--ease);
+}
+
+.pf-collapse.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transform: none;
+}
+
+.pf-collapse-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pf-collapse,
+  .pf-toggle {
+    transition: none;
+  }
+
+  .pf-collapse {
+    transform: none;
+  }
+}
+
+.pf-filters {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.pf-group {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.pf-title {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-strong);
+}
+
+.pf-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.pf-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 2.5rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-text);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.pf-option:hover {
+  border-color: var(--line-strong);
+  background: var(--paper);
+}
+
+.pf-option[aria-pressed="true"] {
+  border-color: var(--filter-accent);
+  background: var(--filter-accent-tint);
+  box-shadow: inset 0 0 0 1px var(--filter-accent);
+}
+
+.pf-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.pf-option:focus-visible,
+.pf-reset:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Маленькая схема планировки сверху: контур — открытые стороны, толстая линия — стена */
+.pf-icon {
+  flex: none;
+  width: 1.25rem;
+  height: 0.875rem;
+}
+
+.pf-icon-floor {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1.25;
+}
+
+.pf-icon-wall {
+  fill: none;
+  stroke: var(--ink-soft);
+  stroke-width: 2.5;
+  stroke-linecap: square;
+}
+
+.pf-option[aria-pressed="true"] .pf-icon-floor,
+.pf-option[aria-pressed="true"] .pf-icon-wall {
+  stroke: var(--filter-accent);
+}
+
+.pf-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-4);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--line);
+}
+
+/* Без выбранных фильтров строке итога нечего показать */
+.pf-footer:not(:has(.pf-reset:not([hidden]))) {
+  display: none;
+}
+
+.pf-summary {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.pf-reset {
+  min-height: 2.5rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--brand-text);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+.pf-empty {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-2);
+  padding: var(--space-6);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-md);
+  color: var(--muted);
+}
+
+.pf-empty p {
+  margin: 0;
+}
+
+/* Шире телефона: подпись слева, переключатели в той же строке */
+@media (min-width: 640px) {
+  .pf-filters {
+    padding: var(--space-4) var(--space-5);
+  }
+
+  .pf-group {
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    align-items: start;
+    column-gap: var(--space-4);
+  }
+
+  /* Подпись — вровень с первой строкой кнопок, даже если они перенеслись */
+  .pf-title {
+    display: flex;
+    align-items: center;
+    min-height: 2.5rem;
+  }
+
+  .pf-options {
+    gap: var(--space-2);
+  }
+
+  .pf-option {
+    padding: 0 0.875rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pf-option {
+    transition: none;
+  }
+}
+
+.year-tabs {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0 calc(-1 * var(--gutter)) var(--space-6);
+  padding: 0 var(--gutter) var(--space-1);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.year-tab {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2.75rem;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.year-tab:hover {
+  border-color: var(--ink);
+}
+
+.year-tab[aria-selected="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.year-count {
+  color: var(--muted);
+  font-weight: var(--fw-text);
+}
+
+.year-tab[aria-selected="true"] .year-count {
+  color: var(--on-dark-muted);
+}
+
+@media (min-width: 860px) {
+  .year-tabs {
+    flex-wrap: wrap;
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+}
+
+.exhibition + .exhibition {
+  margin-top: var(--space-7);
+}
+
+/* Телефон: счётчик идёт сразу за последним словом и при переносе не отрывается к правому краю */
+.exhibition-title {
+  margin-bottom: var(--space-4);
+  font-size: var(--fs-group-title);
+  font-weight: var(--fw-strong);
+  line-height: 1.25;
+}
+
+.exhibition-count {
+  margin-left: var(--space-2);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-text);
+  white-space: nowrap;
+}
+
+/* Телефон: две равные колонки; minmax(0, …) не даёт длинной подписи раздвинуть колонку */
+.stand-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stand-card {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+}
+
+.stand-open {
+  display: grid;
+  gap: var(--space-1);
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  overflow-wrap: break-word;
+  cursor: pointer;
+}
+
+.stand-media {
+  position: relative;
+  display: block;
+  margin-bottom: var(--space-2);
+  overflow: hidden;
+  border-radius: var(--radius-media);
+  background: var(--hall);
+  aspect-ratio: 4 / 3;
+}
+
+.stand-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s var(--ease);
+}
+
+.stand-open:hover .stand-media img {
+  transform: scale(1.03);
+}
+
+.stand-open:focus-visible {
+  outline: none;
+}
+
+.stand-open:focus-visible .stand-media {
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
+}
+
+.stand-badges {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  left: var(--space-2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+/* Число фото — всегда последний бейдж: на телефоне уходит в правый угол, «Пример» остаётся слева */
+.stand-badges .badge:last-child {
+  margin-left: auto;
+}
+
+.badge {
+  max-width: 100%;
+  padding: 0.125rem var(--space-2);
+  border-radius: var(--radius-sm);
+  /* Дымчатое стекло на фото: тёмная заливка, светлая кромка */
+  background: rgb(var(--shade) / 0.55);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18);
+  -webkit-backdrop-filter: var(--lg-blur-soft);
+  backdrop-filter: var(--lg-blur-soft);
+  color: var(--on-dark);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-strong);
+}
+
+.stand-title {
+  font-size: var(--fs-card-title);
+  font-weight: var(--fw-strong);
+  line-height: 1.3;
+}
+
+.stand-meta {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+/* «Смотреть видео» под карточкой — открывает галерею стенда сразу с плеером (видео на сайте) */
+.stand-video {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  justify-self: start;
+  min-height: 2.75rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+  cursor: pointer;
+}
+
+.stand-video:hover {
+  color: var(--brand);
+}
+
+/* Значок воспроизведения: красный круг с треугольником (без картинок и SVG) */
+.play-icon,
+.gallery-thumb-play {
+  position: relative;
+  display: inline-block;
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--radius-pill);
+  background: var(--brand);
+}
+
+.play-icon::after,
+.gallery-thumb-play::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 54%;
+  border-style: solid;
+  border-width: 0.375rem 0 0.375rem 0.625rem;
+  border-color: transparent transparent transparent var(--surface);
+  transform: translate(-50%, -50%);
+}
+
+/* Карточка шире ~19rem — прежние размеры заголовков, подписей, фото и бейджей */
+@media (min-width: 640px) {
+  .exhibition-title {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    font-size: var(--fs-md);
+    line-height: 1.1;
+  }
+
+  .exhibition-count {
+    margin-left: 0;
+  }
+
+  .stand-grid {
+    gap: var(--space-5);
+  }
+
+  .stand-media {
+    aspect-ratio: 16 / 10;
+  }
+
+  .stand-badges {
+    top: var(--space-3);
+    right: var(--space-3);
+    left: var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .stand-badges .badge:last-child {
+    margin-left: 0;
+  }
+
+  .stand-title {
+    font-size: var(--fs-base);
+  }
+
+  .stand-meta {
+    font-size: var(--fs-sm);
+  }
+}
+
+@media (min-width: 860px) {
+  .stand-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  }
+}
+
+.empty {
+  padding: var(--space-6);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-md);
+  color: var(--muted);
+}
+
+/* О нас: три главные цифры — крупно, в три колонки с линией сверху; год основания и остальные
+   цифры — мелкой строкой ниже. Блок на главной — сплошная «бумага» сразу после «Реализовано».
+   Размер числа — от ширины колонки (cqi): «100 000+» помещается в узкую колонку планшета */
+
+.section.about {
+  padding-block: var(--space-compact);
+}
+
+.section.about .section-head {
+  margin-bottom: var(--space-6);
+}
+
+.stats {
+  display: grid;
+  gap: var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stat {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  padding-top: var(--space-4);
+  border-top: 2px solid var(--ink);
+  container-type: inline-size;
+}
+
+.stat-value {
+  font-size: clamp(2.75rem, 18cqi, 4.75rem);
+  font-weight: var(--fw-display);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Число и «+» — фирменный оранжево-красный (крупный текст: контраст 3.4:1 на «бумаге»);
+   «м²» — в подписи под числом, тёмно-серым */
+.stat-value {
+  color: var(--brand);
+}
+
+.stat-label {
+  max-width: 24ch;
+  color: var(--muted);
+  font-size: var(--fs-base);
+  line-height: 1.35;
+}
+
+.stats-more {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.stats-more p {
+  margin: 0;
+}
+
+.stats-more strong {
+  color: var(--ink);
+  font-weight: var(--fw-strong);
+}
+
+@media (min-width: 640px) {
+  .stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Контакты */
+
+.contact-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--space-5);
+  margin: var(--space-6) 0 0;
+}
+
+.contact-item {
+  padding-top: var(--space-3);
+  border-top: 2px solid var(--ink);
+}
+
+.contact-item dt {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.contact-item dd {
+  min-width: 0;
+  margin: var(--space-1) 0 0;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-strong);
+  overflow-wrap: break-word;
+}
+
+.contact-item a {
+  color: inherit;
+  text-decoration-color: var(--brand);
+  text-underline-offset: 0.2em;
+}
+
+/* Почта: адрес — обычный текст и выделяется целиком одним щелчком (Cmd/Ctrl+C копирует ровно его),
+   рядом небольшие кнопки «скопировать» и «написать письмо». Кнопку копирования показывает JS */
+.copy-field {
+  position: relative;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  max-width: 100%;
+}
+
+.copy-value {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  user-select: all;
+  -webkit-user-select: all;
+}
+
+.copy-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.copy-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid var(--copy-border);
+  border-radius: var(--radius-pill);
+  background: var(--copy-bg);
+  color: inherit;
+  text-shadow: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.copy-btn[hidden] {
+  display: none;
+}
+
+.copy-btn:hover {
+  border-color: currentColor;
+}
+
+.copy-btn svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Подтверждение — подсказка под адресом поверх соседнего текста: ничего не сдвигает */
+.copy-status {
+  position: absolute;
+  top: calc(100% + var(--space-1));
+  left: 0;
+  z-index: 2;
+  max-width: min(20rem, 100vw - 2rem);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--copy-tip-bg);
+  color: var(--copy-tip-fg);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-strong);
+  line-height: 1.4;
+  text-shadow: none;
+}
+
+.copy-status:empty {
+  display: none;
+}
+
+.prose {
+  max-width: 65ch;
+  margin-top: var(--space-4);
+  font-size: var(--fs-md);
+  line-height: 1.55;
+}
+
+#contacts .empty {
+  margin-top: var(--space-6);
+}
+
+/* Соцсети и мессенджеры — отдельная строка под контактами: компактные ссылки-«таблетки»,
+   тише главной кнопки «Связаться с менеджером». На узком экране переносятся */
+.socials {
+  margin-top: var(--space-7);
+}
+
+.socials-title {
+  margin: 0;
+  font-size: var(--fs-base);
+  font-weight: var(--fw-strong);
+}
+
+.social-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-5) var(--space-2) var(--space-2);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: var(--fs-base);
+  font-weight: var(--fw-medium);
+  text-decoration: none;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.social-link:hover {
+  border-color: var(--brand);
+  color: var(--brand-text);
+}
+
+.social-link:focus-visible {
+  border-color: var(--brand);
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
+}
+
+.social-icon {
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.social-icon-fg {
+  fill: var(--on-brand-icon);
+}
+
+.social-link--telegram .social-icon-bg {
+  fill: var(--telegram);
+}
+
+.social-link--vk .social-icon-bg {
+  fill: var(--vk);
+}
+
+.social-link--whatsapp .social-icon-bg {
+  fill: var(--whatsapp);
+}
+
+.social-link--phone .social-icon-bg {
+  fill: var(--brand);
+}
+
+.social-max-start {
+  stop-color: var(--max-start);
+}
+
+.social-max-end {
+  stop-color: var(--max-end);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .social-link {
+    transition: none;
+  }
+}
+
+/* Диалоги */
+
+.modal {
+  width: min(30rem, 100% - 2rem);
+  max-height: calc(100svh - 2rem);
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  color: var(--ink);
+  --lg-alpha: 0.48;
+}
+
+.modal::backdrop {
+  background: rgb(var(--shade) / 0.65);
+}
+
+.modal-title {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-display);
+}
+
+.request-form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.request-form .modal-title {
+  margin-bottom: var(--space-2);
+}
+
+.form-note {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.form-status {
+  padding: var(--space-3) var(--space-4);
+  border-left: 3px solid var(--brand);
+  background: var(--lg-inset);
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* Заявка на дизайн-проект: одно поле контакта, под ним пояснение и ошибка; выбранные параметры
+   стенда — справкой над полем, чтобы было видно, что уйдёт менеджеру */
+.dr-step:not([hidden]) {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.modal-lead {
+  color: var(--muted);
+}
+
+/* Заголовок «Спасибо…» получает фокус программно (экранный диктор читает результат) — это не
+   элемент управления, рамка фокуса ему не нужна */
+.modal-title[tabindex="-1"]:focus {
+  outline: none;
+}
+
+.dr-summary {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-size: var(--fs-sm);
+}
+
+.dr-summary:empty {
+  display: none;
+}
+
+.form-hint {
+  margin-top: var(--space-2);
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.field-error {
+  margin-top: var(--space-2);
+  color: var(--brand-text);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+}
+
+.field input[aria-invalid="true"] {
+  border-color: var(--brand-text);
+}
+
+/* Поле-ловушка для ботов: вне экрана и вне порядка табуляции, экранным дикторам скрыто */
+.dr-trap {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.btn[aria-busy="true"] {
+  cursor: progress;
+  opacity: 0.75;
+}
+
+.gallery {
+  width: min(64rem, 100% - 2rem);
+  padding: var(--space-4);
+}
+
+.gallery-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.gallery-meta {
+  margin-top: var(--space-1);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.gallery-description {
+  max-width: 60ch;
+  margin-top: var(--space-2);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+}
+
+.gallery-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  margin: var(--space-2) 0 0;
+  font-size: var(--fs-sm);
+}
+
+.gallery-specs div {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.gallery-specs dt {
+  color: var(--muted);
+}
+
+.gallery-specs dd {
+  margin: 0;
+  font-weight: var(--fw-strong);
+}
+
+/* Сцена — один размер для всех фото: 3 : 2, как большинство снимков, и не выше прежнего;
+   содержимое (фото, подложка, плеер) лежит слоями поверх, размер от него не зависит */
+.gallery-stage {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--hall);
+  /* Ширина — всегда во всё окно галереи: иначе ограничение высоты через пропорцию сузило бы сцену */
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  max-height: min(62svh, 36rem);
+}
+
+/* По умолчанию фото заполняет сцену; сильно другая пропорция (main.js: data-fit="contain") —
+   целиком, по краям — его размытая копия, а не чёрные поля. Пропорции снимка не искажаются */
+.gallery-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.2s ease-out;
+}
+
+.gallery-stage[data-fit="contain"] .gallery-image {
+  object-fit: contain;
+}
+
+.gallery-backdrop {
+  position: absolute;
+  inset: 0;
+  display: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(24px) brightness(0.8) saturate(1.1);
+  transform: scale(1.15);
+}
+
+.gallery-stage[data-fit="contain"] .gallery-backdrop[src] {
+  display: block;
+}
+
+/* Новое фото грузится: на месте — тёмная подложка сцены, без фото прежнего стенда */
+.gallery-image.is-loading {
+  opacity: 0;
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-image {
+    transition: none;
+  }
+}
+
+.gallery-nav {
+  position: absolute;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  border: 1px solid var(--lg-edge);
+  border-radius: 50%;
+  background: var(--lg-sheen), rgb(var(--veil) / calc(0.4 + var(--lg-boost)));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.8);
+  -webkit-backdrop-filter: var(--lg-blur-soft);
+  backdrop-filter: var(--lg-blur-soft);
+  color: var(--ink);
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.gallery-nav:hover {
+  background: var(--surface);
+}
+
+.gallery-nav svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.gallery-prev {
+  left: var(--space-3);
+}
+
+.gallery-next {
+  right: var(--space-3);
+}
+
+.gallery-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.gallery-thumbs {
+  display: flex;
+  gap: var(--space-2);
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: var(--space-1);
+}
+
+.gallery-thumb {
+  flex: none;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  background: none;
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+.gallery-thumb img {
+  width: 4.5rem;
+  height: 3rem;
+  object-fit: cover;
+}
+
+.gallery-thumb[aria-current="true"] {
+  border-color: var(--brand);
+  opacity: 1;
+}
+
+.gallery-thumb:hover {
+  opacity: 1;
+}
+
+/* Пока открыта галерея, «Закрыть» панели под ней не видна: в окне одна кнопка закрытия */
+body:has(#gallery[open]) .sheet-close {
+  visibility: hidden;
+}
+
+/* Плитка видео в ленте — превью стенда со значком воспроизведения по центру */
+.gallery-thumb-video {
+  position: relative;
+  min-width: 4.5rem;
+  min-height: 3rem;
+  background: var(--ink);
+}
+
+.gallery-thumb-video .gallery-thumb-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.gallery-video {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+}
+
+/* Плеер Vimeo и сообщение об ошибке встают на место фото — та же высота, окно не прыгает */
+.gallery-player {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.gallery-video-error {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--space-5);
+  color: var(--ink);
+  text-align: center;
+}
+
+/* Жидкое стекло — у слоёв навигации и наложений (шапка, меню, шторки, окна).
+   Секции главной стоят прямо на сцене и стекла не используют. Плотность --lg-alpha
+   задаёт каждый элемент в своём правиле; блок стоит после компонентов */
+.site-header,
+.site-nav {
+  border: 1px solid var(--lg-edge);
+  background: var(--lg-sheen), rgb(var(--veil) / calc(var(--lg-alpha, 0.7) + var(--lg-boost)));
+  box-shadow: var(--lg-shadow);
+  -webkit-backdrop-filter: var(--lg-blur);
+  backdrop-filter: var(--lg-blur);
+  /* Сквозь прозрачное стекло фон темнее бумаги: второстепенный текст почти того же
+     тона, что основной (не ниже 4,5:1 на самом тёмном участке под панелью),
+     иерархия держится на размере и начертании */
+  --ink-soft: #332E2F;
+  --muted: #3B3637;
+  /* Красные номера и значки на стекле — темнее фирменного, чтобы не тонули в фоне */
+  --brand-text: #A82C12;
+}
+
+/* Шторки разделов и окна — сплошная бумага: стекло над длинными списками и галереей
+   делало подложку мутно-серой, а под ними нет сцены, которую стоило бы показывать */
+.sheet,
+.modal {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  box-shadow: var(--shadow-lift);
+}
+
+/* Ссылки в тексте шторок (контакты, «О нас»): тёмные, фирменный цвет — у подчёркивания */
+.sheet a:not(.btn) {
+  color: var(--ink);
+  text-decoration-color: var(--brand);
+}
+
+/* Шапка — полоса во всю ширину: кромка только снизу, без падающей тени */
+.site-header {
+  border-width: 0 0 1px;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 1px 0 rgb(var(--shade) / 0.06);
+}
+
+/* На широком экране меню — строка в шапке, а не отдельная панель */
+@media (min-width: 860px) {
+  .site-nav {
+    border: 0;
+    background: none;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Без backdrop-filter фон под стеклом не размыт — заливка почти сплошная ради читаемости */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root {
+    --lg-boost: 0.5;
+    --lg-inset: rgb(255 255 255 / 0.75);
+    /* «Реализовано» без размытия: детали кадра под текстом резче — подложка чуть плотнее */
+    --paper-sheer-alpha: 0.45;
+  }
+}
+
+/* Движение — только по желанию пользователя */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Всплытие снизу: заголовки, тексты, карточки. Конечное состояние — обычное,
+   поэтому без анимации (нет JS, reduce) контент просто виден. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--reveal-shift));
+  }
+}
+
+/* Первый экран: текст всплывает, и размерная линия вытягивается над подзаголовком —
+   одна последовательность при загрузке */
+@keyframes measure {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* Стрелка проявляется после текста и трижды покачивается вниз — 4,5 с, затем стоит:
+   движение дольше 5 с без возможности остановить мешает читать (WCAG 2.2.2) */
+@keyframes cue-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes cue-nudge {
+  50% {
+    transform: translateY(0.625rem);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  .hero-lead::before {
+    animation: measure 0.8s var(--ease-reveal) 0.5s backwards;
+  }
+
+  .hero-scroll {
+    animation: cue-in 0.6s ease-out 1s backwards;
+  }
+
+  .hero-scroll svg {
+    animation: cue-nudge 1.5s ease-in-out 1.5s 3;
+  }
+
+  /* Первый экран появляется сразу, вместе со сборкой стенда */
+  .hero-title,
+  .hero-lead,
+  .hero-actions {
+    animation: rise var(--reveal-duration) var(--ease-reveal) backwards;
+  }
+
+  .hero-title {
+    animation-delay: 0.1s;
+  }
+
+  .hero-lead {
+    animation-delay: 0.22s;
+  }
+
+  .hero-actions {
+    animation-delay: 0.34s;
+  }
+
+  .hero-facts {
+    animation: rise var(--reveal-duration) var(--ease-reveal) 0.44s backwards;
+  }
+
+  /* Уход первого экрана привязан к прокрутке: --hero-exit от 0 до 1 задаёт main.js */
+  .hero-copy {
+    opacity: calc(1 - 0.85 * var(--hero-exit, 0));
+    transform: translateY(calc(-3rem * var(--hero-exit, 0)));
+  }
+
+  /* Блоки ниже: скрыты, только пока скрипт включил наблюдение (.reveal-on),
+     и показываются один раз — при обратной прокрутке не прячутся снова. */
+  .reveal-on [data-reveal]:not(.is-in) {
+    opacity: 0;
+  }
+
+  .reveal-on [data-reveal].is-in {
+    animation: rise var(--reveal-duration) var(--ease-reveal) var(--reveal-delay, 0ms) backwards;
+  }
+
+  /* Карточки портфолио — по очереди при открытии листа и смене года */
+  .sheet.is-open .stand-card {
+    animation: rise 0.7s var(--ease-reveal) calc(0.12s + var(--stagger, 0) * 70ms) backwards;
+  }
+
+  .stand-card:nth-child(2) {
+    --stagger: 1;
+  }
+
+  .stand-card:nth-child(3) {
+    --stagger: 2;
+  }
+
+  .stand-card:nth-child(4) {
+    --stagger: 3;
+  }
+
+  .stand-card:nth-child(5) {
+    --stagger: 4;
+  }
+
+  .stand-card:nth-child(n + 6) {
+    --stagger: 5;
+  }
+}

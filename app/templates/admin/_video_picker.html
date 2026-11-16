@@ -1,0 +1,107 @@
+{#- Выбор видеоотзывов для блока «Нам доверяют свои проекты» — то же окно, что «Проекты на главной»
+    (admin-picker.js, стили .picker-*): сверху выбранные по порядку, снизу каталог роликов с поиском.
+    В home.json сохраняются только id роликов по позициям; подписи и обложки — из библиотеки
+    (список «Все видео» ниже в этой же группе). Выключенные ролики в каталоге не показываются.
+    «+ Добавить видео» в окне — та же форма, что в группе (video_adder, admin-videos.js): ссылка RuTube
+    или файл, обложка; ролик сразу встаёт в каталог, выбор в окне не сбрасывается. -#}
+{% from "admin/_video_library.html" import video_adder %}
+{% macro video_picker(picker, n) -%}
+<div class="picker" data-picker data-picker-field="{{ picker.field }}" data-picker-max="{{ picker.max }}"
+     data-picker-missing="Удалено из библиотеки — на главной заглушка" data-picker-hidden="Выключено — на главной заглушка"
+     data-picker-full="на главной уже {n} видео">
+  <h3>Видео на главной</h3>
+  <p class="muted picker-help">Обложку, название и описание видео берут из списка «Все видео» ниже. Пустое место — заглушка «Скоро здесь будет видео». Выбор сохраняется кнопкой «Сохранить черновик», на сайт попадает после «Опубликовать».</p>
+  <ol class="picker-selected" data-picker-list></ol>
+  <p class="muted" data-picker-empty hidden>Видео не выбраны — в блоке показаны заглушки.</p>
+  <button class="button button-small" type="button" data-picker-open hidden>Выбрать видео…</button>
+  <label class="field" data-picker-raw>
+    <span>Видео на главной (id через запятую, по порядку)</span>
+    <input name="{{ picker.field }}" value="{{ picker.value }}" data-picker-input>
+  </label>
+
+  <dialog class="picker-dialog" aria-labelledby="vpicker-title-{{ n }}" data-picker-dialog>
+    <div class="picker-head">
+      <h2 id="vpicker-title-{{ n }}">Видео для «Нам доверяют свои проекты»</h2>
+      <button class="button button-small" type="button" data-picker-close>Закрыть</button>
+    </div>
+    <div class="picker-body">
+      <section class="picker-chosen-wrap" aria-labelledby="vpicker-chosen-title-{{ n }}">
+        <div class="picker-section-head">
+          <h3 id="vpicker-chosen-title-{{ n }}">Видео на главной</h3>
+          <p class="picker-count" data-picker-count aria-live="polite"></p>
+        </div>
+        <p class="muted picker-section-note">Порядок — как на главной. Перетащите строку или нажмите ↑/↓.</p>
+        <ol class="picker-chosen" data-picker-chosen></ol>
+        <p class="picker-chosen-empty" data-picker-chosen-empty hidden>Пока пусто — добавьте видео ниже.</p>
+      </section>
+      <section class="picker-catalog" aria-labelledby="vpicker-catalog-title-{{ n }}">
+        <div class="picker-section-head">
+          <h3 id="vpicker-catalog-title-{{ n }}">Добавить видеоотзывы</h3>
+          <button class="button button-small" type="button" aria-expanded="false" aria-controls="vpicker-add-{{ n }}"
+                  data-picker-add-open hidden>+ Добавить видео</button>
+        </div>
+        {#- Новое видео в библиотеку, не закрывая окно. Поля без name: форма Редактора их не отправляет;
+            без JS — форма «+ Добавить видео» в группе ниже #}
+        <div class="picker-add" id="vpicker-add-{{ n }}" role="group" aria-labelledby="vpicker-add-title-{{ n }}" hidden data-picker-add>
+          <h4 id="vpicker-add-title-{{ n }}">Новое видео в библиотеку</h4>
+          {{ video_adder("picker-" ~ n, picker.lib, false) }}
+        </div>
+        <p class="picker-add-done" role="status" data-picker-add-done hidden></p>
+        <div class="picker-tools">
+          <input type="search" class="picker-search" placeholder="Название видео" aria-label="Поиск по названию или описанию видео" data-picker-search>
+        </div>
+        <ul class="picker-grid" data-picker-grid>
+          {%- for item in picker.catalog %}
+          {#- Выключенные в каталоге не показываются (на главной их нет), но нужны для подписи уже выбранных #}
+          <li{% if not item.active %} hidden data-picker-draft{% endif %}>
+            <button class="picker-card" type="button" aria-pressed="false" data-picker-card
+                    data-id="{{ item.id }}" data-title="{{ item.title }}" data-event="{{ item.description }}"
+                    data-year="" data-published="{{ 1 if item.active else 0 }}">
+              <span class="picker-thumb picker-thumb-video">
+                {%- if item.thumb %}<img src="{{ item.thumb }}" alt="" width="240" height="135" loading="lazy" decoding="async">{% endif %}
+                <svg class="picker-video-play" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="23"/><path d="M20 16.5v15l12-7.5z"/></svg>
+                <span class="picker-video-badge" aria-hidden="true">{{ item.source }}</span>
+              </span>
+              <span class="picker-card-text">
+                <span class="picker-title">{{ item.title }}</span>
+                <span class="picker-meta">{{ item.description }}</span>
+              </span>
+              <span class="picker-action" data-picker-action>Добавить</span>
+            </button>
+          </li>
+          {%- endfor %}
+        </ul>
+        {#- Карточка видео, добавленного из окна: admin-picker.js заполняет копию и ставит в конец каталога #}
+        <template data-picker-card-template>
+          <li>
+            <button class="picker-card" type="button" aria-pressed="false" data-picker-card data-id="" data-title="" data-event="" data-year="" data-published="1">
+              <span class="picker-thumb picker-thumb-video">
+                <svg class="picker-video-play" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="23"/><path d="M20 16.5v15l12-7.5z"/></svg>
+                <span class="picker-video-badge" aria-hidden="true" data-picker-badge></span>
+              </span>
+              <span class="picker-card-text">
+                <span class="picker-title"></span>
+                <span class="picker-meta"></span>
+              </span>
+              <span class="picker-action" data-picker-action>Добавить</span>
+            </button>
+          </li>
+        </template>
+        {%- if not picker.catalog|selectattr("active")|list %}
+        <p class="muted" data-picker-catalog-empty>Включённых видео пока нет — добавьте первое кнопкой «+ Добавить видео».</p>
+        {%- endif %}
+        <p class="muted" data-picker-nothing hidden>Ничего не найдено — измените поиск.</p>
+        {%- set off = picker.catalog|rejectattr("active")|list %}
+        {%- if off %}
+        <p class="muted picker-section-note">Выключенные видео ({{ off|length }}) здесь не показаны: на главную попадают только включённые.</p>
+        {%- endif %}
+      </section>
+    </div>
+    <div class="picker-foot">
+      <button class="button button-primary" type="button" data-picker-done>Готово</button>
+      <button class="button" type="button" data-picker-close>Отмена</button>
+      <p class="picker-changed" data-picker-changed hidden>Есть изменения — «Готово» перенесёт их в редактор.</p>
+    </div>
+  </dialog>
+</div>
+{%- endmacro %}

@@ -1,0 +1,9 @@
+{
+  "_comment": "Контакты. Пустые значения на сайте не показываются. type: phone (ссылка tel:), email (ссылка mailto:), link (ссылка http/https), address или text (без ссылки).",
+  "contacts": [
+    {"type": "phone", "label": "Телефон", "value": ""},
+    {"type": "email", "label": "Email", "value": ""},
+    {"type": "address", "label": "Офис", "value": ""},
+    {"type": "link", "label": "Мессенджеры", "value": ""}
+  ]
+}

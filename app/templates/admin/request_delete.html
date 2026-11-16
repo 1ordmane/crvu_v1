@@ -1,0 +1,16 @@
+{% extends "admin/base.html" %}
+{% block title %}Удаление заявки{% endblock %}
+{% block content %}
+<section class="panel panel-danger" aria-labelledby="delete-title">
+  <h1 id="delete-title">Удалить заявку?</h1>
+  <p>Заявка от <strong>{{ item.contact }}</strong>{% if item.when %} ({{ item.when }}){% endif %} будет удалена безвозвратно — восстановить её не получится.</p>
+  <p class="muted">Если с клиентом ещё не связались, сначала сохраните его контакт.</p>
+  <div class="actions">
+    <form method="post" action="{{ url_for('admin.delete_request', name=item.file) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="button button-danger" type="submit">Удалить</button>
+    </form>
+    <a class="button" href="{{ url_for('admin.requests_list') }}">Отмена</a>
+  </div>
+</section>
+{% endblock %}

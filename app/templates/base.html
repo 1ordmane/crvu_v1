@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="{{ site.description }}">
+  <meta name="theme-color" content="#F6F4F1">
+  <title>{% block title %}{{ site.title or site.company }}{% endblock %}</title>
+  <link rel="preload" href="{{ url_for('static', filename='fonts/onest-cyrillic.woff2') }}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="{{ url_for('static', filename='js/stand-plan.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/stand-price.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/portfolio-filter.js') }}" defer></script>
+  {%- if editing %}
+  {#- Только в предпросмотре редактора: подсветка и выбор полей кликом #}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/editor-preview.css') }}">
+  <script src="{{ url_for('static', filename='js/editor-preview.js') }}" defer></script>
+  {%- endif %}
+</head>
+<body{% if sheet %} class="has-sheet"{% endif %}>
+  <a class="skip-link" href="#main">{{ ui.skip_link or "Перейти к содержанию" }}</a>
+
+  <header class="site-header" data-header>
+    <a class="logo" href="{{ url_for('main.index') }}" aria-label="{{ site.company }} — {{ ui.logo_label or "на главную" }}">
+      {%- include "partials/logo.html" -%}
+    </a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-menu-toggle>
+      <span class="menu-toggle-bars" aria-hidden="true"></span>
+      <span class="menu-toggle-text">{{ ui.menu or "Меню" }}</span>
+    </button>
+    <nav class="site-nav" id="site-nav" aria-label="{{ ui.menu_label or "Основное меню" }}" data-nav>
+      <a href="{{ url_for('main.index') }}" data-route="home"{% if not sheet %} aria-current="page"{% endif %}{{ edit("nav_home") }}>{{ site.nav_home or "Главная" }}</a>
+      {#- «О нас» — блок цифр на главной: отдельного пункта меню у него нет (без блока — обычная шторка) #}
+      {%- for p in pages if not (about_section and p is sameas about_page) %}
+      <a href="{{ url_for('main.page', slug=p.slug) }}" data-route="{{ p.slug }}"{% if sheet == p.slug %} aria-current="page"{% endif %}>{{ p.nav or p.title }}</a>
+      {%- endfor %}
+      {#- Телефон и email — первые корректные из contacts.json. В меню: на телефоне видны в раскрытом
+          списке, на широком экране — отдельной колонкой рядом с кнопкой заявки (style.css).
+          draggable="false" (и -webkit-user-drag в CSS): протянуть мышью по ссылке — выделить и скопировать
+          текст, а не перетащить ссылку; щелчок по-прежнему открывает звонок или письмо #}
+      {%- set header_phone = contacts|selectattr("type", "equalto", "phone")|selectattr("href")|first %}
+      {%- set header_email = contacts|selectattr("type", "equalto", "email")|selectattr("href")|first %}
+      {%- if header_phone or header_email %}
+      <div class="header-contacts">
+        {%- if header_phone %}
+        <a class="header-phone" href="{{ header_phone.href }}" draggable="false">{{ header_phone.value }}</a>
+        {%- endif %}
+        {%- if header_email %}
+        {#- Email: щелчок по адресу открывает меню «Написать письмо» / «Скопировать адрес» (main.js,
+            initEmailMenu); письмо или копирование — только после выбора. Значок справа копирует адрес сразу,
+            без меню (initCopy, как в «Контактах»); его показывает JS. Без скрипта — обычная ссылка mailto: #}
+        <span class="header-email-wrap" data-copy-field>
+          <a class="header-email" href="{{ header_email.href }}" draggable="false" aria-expanded="false" aria-controls="header-email-menu" data-copy-source>{{ header_email.value }}</a>
+          <button class="header-copy" type="button" data-copy hidden aria-label="Скопировать адрес почты {{ header_email.value }}" title="Скопировать адрес">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>
+          </button>
+          <span class="copy-status" role="status" aria-live="polite" data-copy-status></span>
+          <div class="email-menu" id="header-email-menu" hidden data-email-menu>
+            <a class="email-menu-item" href="{{ header_email.href }}" data-email-write>Написать письмо</a>
+            <button class="email-menu-item" type="button" data-email-copy>Скопировать адрес</button>
+          </div>
+          <span class="email-status" role="status" aria-live="polite" data-email-status></span>
+        </span>
+        {%- endif %}
+      </div>
+      {%- endif %}
+    </nav>
+    <button class="btn btn-primary header-cta" type="button" data-open-request{{ edit("header_button") }}>{{ site.header_button or "Связаться" }}</button>
+  </header>
+
+  {% block content %}{% endblock %}
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      {% with logo_class="footer-logo" %}{% include "partials/logo.html" %}{% endwith %}
+      {%- if site.footer.title %}
+      <h2 class="footer-title" data-reveal{{ edit("footer.title") }}>{{ site.footer.title }}</h2>
+      {%- endif %}
+      {%- if site.footer.lead %}
+      <p class="footer-lead" data-reveal{{ edit("footer.lead") }}>{{ site.footer.lead }}</p>
+      {%- endif %}
+      <button class="btn btn-primary btn-lg" type="button" data-open-request data-reveal{{ edit("footer.button") }}>{{ site.footer.button or "Оставить заявку" }}</button>
+      {%- if contacts %}
+      {%- from "partials/contacts.html" import contact_value %}
+      <address class="footer-contacts">
+        {%- for c in contacts %}
+        <p class="footer-contact"><span class="footer-contact-label">{{ c.label }}</span> {{ contact_value(c) }}</p>
+        {%- endfor %}
+      </address>
+      {%- endif %}
+      {%- if socials %}
+      {#- «Мы в соцсетях» — те же ссылки, что в разделе «Контакты» (contacts.json → socials), с короткими
+          подписями (short; пусто — ТГ, МАХ, ВК). Полное название сети — в aria-label #}
+      {%- from "partials/contacts.html" import social_icon %}
+      <nav class="footer-socials" aria-labelledby="footer-socials-title">
+        <p class="footer-socials-title" id="footer-socials-title"{{ edit("footer.socials_title") }}>{{ (site.footer or {}).get("socials_title") or "Мы в соцсетях" }}</p>
+        <ul class="footer-social-list">
+          {%- for s in socials %}
+          <li><a class="footer-social social-link--{{ s.network }}" href="{{ s.url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ s.label }} — откроется в новой вкладке">{{ social_icon(s.network, "footer") }}<span>{{ s.short }}</span></a></li>
+          {%- endfor %}
+        </ul>
+      </nav>
+      {%- endif %}
+      <p class="footer-copy"{{ edit("footer.copy") }}>{{ ((site.footer or {}).get("copy") or "© {year} {company}")|replace("{year}", current_year|string)|replace("{company}", site.company) }}</p>
+    </div>
+  </footer>
+
+  {#- Плавающая кнопка «Связаться» — всегда справа внизу экрана, на любой прокрутке и поверх шторок. Пункты меню — contacts.json → quick (позвонить, Telegram,
+      WhatsApp, MAX; пункт без ссылки не показывается). <details>: меню открывается и с клавиатуры, и без JS;
+      main.js (initFabMenu) закрывает его щелчком мимо, Esc и после выбора. Пунктов нет — кнопка открывает заявку #}
+  {%- set fab_label = site.floating_button or "Связаться" %}
+  {%- if quick_contacts %}
+  {%- from "partials/contacts.html" import social_icon %}
+  <details class="fab" data-fab>
+    <summary class="btn btn-primary fab-button" aria-controls="fab-menu" data-fab-toggle><svg class="fab-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4.5h14a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H10l-4.5 3.5v-3.5H5A1.5 1.5 0 0 1 3.5 15V6A1.5 1.5 0 0 1 5 4.5z"/></svg><span{{ edit("floating_button") }}>{{ fab_label }}</span></summary>
+    <div class="fab-menu" id="fab-menu">
+      <ul class="fab-list" aria-label="{{ fab_label }}">
+        {%- for q in quick_contacts %}
+        <li><a class="fab-item social-link--{{ q.network }}" href="{{ q.url }}"{% if q.external %} target="_blank" rel="noopener noreferrer" aria-label="{{ q.label }} — откроется в новой вкладке"{% endif %} data-fab-item>{{ social_icon(q.network, "fab") }}<span>{{ q.label }}</span></a></li>
+        {%- endfor %}
+      </ul>
+    </div>
+  </details>
+  {%- else %}
+  <div class="fab">
+    <button class="btn btn-primary fab-button" type="button" data-open-request><svg class="fab-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4.5h14a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H10l-4.5 3.5v-3.5H5A1.5 1.5 0 0 1 3.5 15V6A1.5 1.5 0 0 1 5 4.5z"/></svg><span{{ edit("floating_button") }}>{{ fab_label }}</span></button>
+  </div>
+  {%- endif %}
+
+  <dialog class="modal" id="request" aria-labelledby="request-title">
+    {%- set rq = site.request or {} %}
+    <form class="request-form" data-request-form data-email="{{ rq.email or '' }}" data-subject="{{ rq.subject or '' }}"
+          data-offline-message="{{ rq.offline_message or '' }}"
+          data-body-name="{{ rq.body_name or 'Имя' }}" data-body-contact="{{ rq.body_contact or 'Контакт' }}">
+      <h2 class="modal-title" id="request-title">{{ rq.title or "Заявка" }}</h2>
+      <div class="field">
+        <label for="rq-name">{{ rq.name_label or "Ваше имя" }}</label>
+        <input id="rq-name" name="name" autocomplete="name" maxlength="100" required>
+      </div>
+      <div class="field">
+        <label for="rq-contact">{{ rq.contact_label or "Телефон или Telegram" }}</label>
+        <input id="rq-contact" name="contact" autocomplete="tel" maxlength="100" required>
+      </div>
+      <div class="field">
+        <label for="rq-message">{{ rq.message_label or "Выставка, даты, площадь, бюджет" }}</label>
+        <textarea id="rq-message" name="message" rows="4" maxlength="2000"></textarea>
+      </div>
+      <p class="form-note">{{ rq.note_email if rq.email else rq.note_offline }}</p>
+      <p class="form-status" role="status" data-request-status hidden></p>
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit">{{ rq.submit or "Отправить заявку" }}</button>
+        <button class="btn btn-quiet" type="button" data-close-dialog>{{ rq.cancel or "Отмена" }}</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="modal gallery" id="gallery" aria-labelledby="gallery-title"
+          data-photo-alt="{{ ui.photo_alt or '{title}, фото {n} из {total}' }}" data-photo-thumb="{{ ui.photo_thumb or 'Фото {n}' }}"
+          data-video-label="{{ ui.video or 'Смотреть видео' }}" data-photos-label="{{ ui.video_back or 'К фото' }}"
+          data-video-title="{{ ui.video_title or '{title} — видео' }}" data-video-thumb="{{ ui.video_thumb or 'Видео' }}">
+    <div class="gallery-head">
+      <div>
+        <h2 class="modal-title" id="gallery-title" data-gallery-title></h2>
+        <p class="gallery-meta" data-gallery-meta></p>
+        <p class="gallery-description" data-gallery-description hidden></p>
+        <dl class="gallery-specs" data-gallery-specs hidden></dl>
+      </div>
+      <button class="btn btn-quiet" type="button" data-close-dialog>{{ ui.close or "Закрыть" }}</button>
+    </div>
+    <div class="gallery-stage">
+      {#- sizes — ширина фото в окне галереи (.gallery: min(64rem, 100% − 2rem) минус поля по 1rem) #}
+      {#- Размытая копия того же фото — фон, если снимок показан целиком (main.js: data-fit="contain") #}
+      <img class="gallery-backdrop" data-gallery-backdrop alt="" aria-hidden="true">
+      <img class="gallery-image" data-gallery-image sizes="(min-width: 66rem) 62rem, calc(100vw - 4rem)" alt="">
+      {#- Плеер Vimeo или Rutube (iframe) появляется здесь только после «Смотреть видео» — его создаёт main.js #}
+      <p class="gallery-video-error" data-gallery-video-error role="status" hidden>{{ ui.video_error or "Не удалось загрузить видео. Вернитесь к фото или попробуйте позже." }}</p>
+      <button class="gallery-nav gallery-prev" type="button" aria-label="{{ ui.photo_prev or "Предыдущее фото" }}" data-gallery-step="-1">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <button class="gallery-nav gallery-next" type="button" aria-label="{{ ui.photo_next or "Следующее фото" }}" data-gallery-step="1">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+    <div class="gallery-foot">
+      <div class="gallery-thumbs" data-gallery-thumbs></div>
+      <button class="btn btn-quiet gallery-video" type="button" data-gallery-video hidden>{{ ui.video or "Смотреть видео" }}</button>
+    </div>
+  </dialog>
+</body>
+</html>

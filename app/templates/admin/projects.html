@@ -1,0 +1,196 @@
+{% extends "admin/base.html" %}
+{% block title %}Проекты{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Проекты портфолио</h1>
+    <p class="muted">Всего {{ total }}, опубликовано {{ published }}. По годам и месяцам, новые сверху; на сайте — в том же порядке.</p>
+  </div>
+  <div class="actions">
+    <a class="button button-primary" href="{{ url_for('admin.new_project') }}">Добавить проект</a>
+    <a class="button" href="{{ url_for('admin.import_folder') }}">Импортировать папку</a>
+  </div>
+</div>
+
+<details class="panel stack">
+  <summary>Дополнительно: импорт стенда из ZIP</summary>
+  <p class="muted">Не обязателен: проще нажать «Добавить проект» и выбрать фото. ZIP удобен, если фото уже
+    собраны в архив. Одна папка с фото одного стенда, сжатая в ZIP (в Finder: правый клик по папке → «Сжать»).
+    Будет создан черновик: название — из поля ниже или из имени папки, порядок фото — по именам файлов (01, 02…),
+    первое фото — обложка. Остальные поля обязательны, как в форме проекта. Исходная папка на компьютере не меняется.</p>
+  <form class="upload" method="post" enctype="multipart/form-data" action="{{ url_for('admin.import_project') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label class="field">
+      <span>ZIP-архив</span>
+      <input type="file" name="archive" required accept=".zip,application/zip" aria-describedby="import-hint">
+      <small id="import-hint">До {{ limits.upload_mb }} МБ, не больше {{ limits.files }} фото JPG, PNG или WebP по {{ limits.image_mb }} МБ.
+        Не поместилось — догрузите остальные фото на странице проекта.</small>
+    </label>
+    <div class="field-row">
+      <label class="field">
+        <span>Название компании / стенда <em>необязательно</em></span>
+        <input type="text" name="title" maxlength="200" placeholder="Как называется папка в архиве">
+      </label>
+      <label class="field">
+        <span>Выставка <em>обязательно</em></span>
+        <input name="exhibition" required maxlength="200" list="exhibition-list" autocomplete="off">
+        {%- include "admin/_exhibition_list.html" %}
+      </label>
+    </div>
+    <div class="field-row field-row-4">
+      <label class="field">
+        <span>Месяц <em>обязательно</em></span>
+        <select name="month" required>
+          <option value="">—</option>
+          {%- for name in months %}
+          <option value="{{ loop.index }}">{{ name }}</option>
+          {%- endfor %}
+        </select>
+      </label>
+      <label class="field">
+        <span>Год <em>обязательно</em></span>
+        <select name="year" required>
+          {%- for y in form_years %}
+          <option value="{{ y }}"{% if y == current_year %} selected{% endif %}>{{ y }}</option>
+          {%- endfor %}
+        </select>
+      </label>
+      <label class="field">
+        <span>Площадь, м² <em>обязательно</em></span>
+        <input name="area" required inputmode="decimal" pattern="[0-9]{1,6}([.,][0-9]{1,2})?" maxlength="9" placeholder="40,5">
+      </label>
+      <label class="field">
+        <span>Планировка стенда <em>обязательно</em></span>
+        <select name="layout" required>
+          <option value="">—</option>
+          {%- for name in layouts %}
+          <option value="{{ name }}">{{ name }}</option>
+          {%- endfor %}
+        </select>
+      </label>
+    </div>
+    <button class="button button-primary" type="submit">Импортировать</button>
+  </form>
+</details>
+
+{#- Поиск и фильтры — обычной GET-формой: адрес можно сохранить в закладки #}
+<form class="filters panel" method="get" action="{{ url_for('admin.projects') }}" role="search">
+  <label class="field filter-search">
+    <span>Поиск</span>
+    <input type="search" name="q" value="{{ filters.q }}" maxlength="200" placeholder="Компания, стенд или выставка">
+  </label>
+  <label class="field">
+    <span>Год</span>
+    <select name="year">
+      <option value="">Все</option>
+      {%- for y in years %}
+      <option value="{{ y }}"{% if filters.year == y %} selected{% endif %}>{{ y }}</option>
+      {%- endfor %}
+    </select>
+  </label>
+  <label class="field">
+    <span>Месяц</span>
+    <select name="month">
+      <option value="">Все</option>
+      {%- for name in months %}
+      <option value="{{ loop.index }}"{% if filters.month == loop.index %} selected{% endif %}>{{ name }}</option>
+      {%- endfor %}
+    </select>
+  </label>
+  <label class="field">
+    <span>Выставка</span>
+    <select name="event">
+      <option value="">Все</option>
+      {%- for year, items in events|groupby("year")|reverse %}
+      <optgroup label="{{ year }}">
+        {%- for e in items %}
+        <option value="{{ e.key }}"{% if filters.event == e.key %} selected{% endif %}>{{ e.name }}</option>
+        {%- endfor %}
+      </optgroup>
+      {%- endfor %}
+    </select>
+  </label>
+  <label class="field">
+    <span>Планировка</span>
+    <select name="layout">
+      <option value="">Все</option>
+      {%- for name in layouts %}
+      <option value="{{ name }}"{% if filters.layout == name %} selected{% endif %}>{{ name }}</option>
+      {%- endfor %}
+    </select>
+  </label>
+  <div class="filter-actions">
+    <button class="button button-primary" type="submit">Показать</button>
+    {%- if filtering %}<a class="button" href="{{ url_for('admin.projects') }}">Сбросить</a>{% endif %}
+  </div>
+</form>
+
+<p class="list-summary muted">
+  {%- if filtering %}Найдено: {{ shown }} из {{ total }}.{% endif %}
+  {%- if tree|length > 1 and not open_all %} <a href="{{ url_for('admin.projects', open='all') }}">Развернуть все годы</a>{% endif %}
+</p>
+
+{#- Год → месяц → выставка → проекты. Сворачивается без скрипта (<details>); раскрыт последний год,
+    при поиске и фильтрах — всё найденное #}
+{%- for y in tree %}
+<details class="year-group"{% if loop.first or open_all %} open{% endif %} id="{{ y.id }}">
+  <summary>
+    <span class="group-name">{{ y.label }}</span>
+    <span class="group-count" aria-label="проектов: {{ y.count }}">{{ y.count }}</span>
+  </summary>
+  {%- for m in y.months %}
+  <details class="month-group" open id="{{ m.id }}">
+    <summary>
+      <span class="group-name">{{ m.label }}</span>
+      <span class="group-count" aria-label="проектов: {{ m.count }}">{{ m.count }}</span>
+    </summary>
+    {%- for e in m.events %}
+    <section class="expo-group" aria-label="{{ e.name }}">
+      <h3 class="expo-name{% if e.empty %} muted{% endif %}">
+        {%- if e.empty %}{{ e.name }}{% else %}<a href="{{ url_for('admin.projects', event=e.key) }}">{{ e.name }}</a>{% endif %}</h3>
+      <ol class="project-list">
+        {%- for p in e.projects %}
+        {%- set pics = photos[p.id] %}
+        <li class="project-row" id="project-{{ p.id }}">
+          <span class="thumb">
+            {%- if pics %}<img src="{{ pics[0]|media_src(640) }}" alt="" width="96" height="54" loading="lazy">{% endif %}
+          </span>
+          <span class="project-info">
+            <a class="project-title" href="{{ url_for('admin.edit_project', project_id=p.id) }}">{{ p.title }}</a>
+            <span class="project-meta">
+              {%- if p.status == "published" %}<span class="tag tag-published">Опубликован</span>
+              {%- else %}<span class="tag tag-draft">Черновик</span>{% endif %}
+              {%- if p.example %} <span class="tag">Пример</span>{% endif %}
+              {%- if p.layout %}<span>{{ p.layout }}</span>{% endif %}
+              {%- if p.floors == 2 %}<span>Двухэтажный</span>{% endif %}
+              {%- if p.area|area_text %}<span>{{ p.area|area_text }}</span>{% endif %}
+              <span>{{ pics|length }} фото</span>
+            </span>
+          </span>
+          <span class="row-actions">
+            <form method="post" action="{{ url_for('admin.set_status', project_id=p.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="next" value="list">
+              {%- if p.status == "published" %}
+              <button class="button button-small" type="submit" name="status" value="draft">Снять</button>
+              {%- else %}
+              <button class="button button-small" type="submit" name="status" value="published">Опубликовать</button>
+              {%- endif %}
+            </form>
+          </span>
+        </li>
+        {%- endfor %}
+      </ol>
+    </section>
+    {%- endfor %}
+  </details>
+  {%- endfor %}
+</details>
+{%- else %}
+{%- if filtering %}
+<p class="empty">Ничего не найдено. Измените запрос или <a href="{{ url_for('admin.projects') }}">сбросьте фильтры</a>.</p>
+{%- else %}
+<p class="empty">Проектов пока нет. Нажмите «Добавить проект».</p>
+{%- endif %}
+{%- endfor %}
+{% endblock %}

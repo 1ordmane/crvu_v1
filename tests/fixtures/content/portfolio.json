@@ -1,0 +1,592 @@
+{
+  "_comment": "Тестовые данные (tests/fixtures): демонстрационные проекты для тестов. Рабочий контент — content/, эти файлы на сайт не попадают. Фото генерирует tests/conftest.py.",
+  "projects": [
+    {
+      "id": "test-arara",
+      "status": "draft",
+      "order": 30,
+      "example": false,
+      "title": "Арара * 2026",
+      "category": "Пример",
+      "exhibition": "Застройщики",
+      "city": "Москва",
+      "year": 2026,
+      "description": "",
+      "cover": "",
+      "photos": [
+        "portfolio/test-arara/01.jpg"
+      ],
+      "specs": [],
+      "video": "",
+      "_comment": "Тестовая загрузка из исходного CRVU.html: подписи и картинка не похожи на реальный проект. Статус draft — на сайте не показывается."
+    },
+    {
+      "id": "example-2020-1",
+      "status": "draft",
+      "order": 10,
+      "example": true,
+      "title": "Выставочный стенд · 36 м²",
+      "category": "",
+      "exhibition": "Название выставки (пример 1)",
+      "city": "Сочи",
+      "year": 2020,
+      "description": "",
+      "cover": "",
+      "photos": [
+        "static/img/stand/frame-159.webp",
+        "static/img/stand/frame-152.webp",
+        "static/img/stand/frame-140.webp",
+        "static/img/stand/frame-126.webp",
+        "static/img/stand/frame-104.webp"
+      ],
+      "specs": [
+        {
+          "label": "Площадь",
+          "value": "36 м²"
+        }
+      ],
+      "video": ""
+    },
+    {
+      "id": "example-2020-2",
+      "status": "draft",
+      "order": 20,
+      "example": true,
+      "title": "Выставочный стенд · 54 м²",
+      "category": "",
+      "exhibition": "Название выставки (пример 1)",
+      "city": "Дубай",
+      "year": 2020,
+      "description": "",
+      "cover": "",
+      "photos": [
+        "static/img/stand/frame-156.webp",
+        "static/img/stand/frame-148.webp",
+        "static/img/stand/frame-134.webp",
+        "static/img/stand/frame-118.webp",
+        "static/img/stand/frame-159.webp"
+      ],
+      "specs": [
+        {
+          "label": "Площадь",
+          "value": "54 м²"
+        }
+      ],
+      "video": ""
+    },
+    {
+      "id": "example-2020-3",
+      "status": "draft",
+      "order": 30,
+      "example": true,
+      "title": "Выставочный стенд · 72 м²",
+      "category": "",
+      "exhibition": "Название выставки (пример 2)",
+      "city": "Санкт-Петербург",
+      "year": 2020,
+      "description": "",
+      "cover": "",
+      "photos": [
+        "static/img/stand/frame-150.webp",
+        "static/img/stand/frame-159.webp",
+        "static/img/stand/frame-144.webp",
+        "static/img/stand/frame-130.webp",
+        "static/img/stand/frame-110.webp"
+      ],
+      "specs": [
+        {
+          "label": "Площадь",
+          "value": "72 м²"
+        }
+      ],
+      "video": ""
+    },
+    {
+      "id": "example-2021-1",
+      "status": "draft",
+      "order": 10,
+      "example": true,
+      "title": "Выставочный стенд · 54 м²",
+      "category": "",
+      "exhibition": "Название выставки (пример 1)",
+      "city": "Новосибирск",
+      "year": 2021,
+      "description": "",
+      "cover": "",
+      "photos": [
+        "static/img/stand/frame-159.webp",
+        "static/img/stand/frame-152.webp",
+        "static/img/stand/frame-140.webp",
+        "static/img/stand/frame-126.webp",
+        "static/img/stand/frame-104.webp"
+      ],
+      "specs": [
+        {
+          "label": "Площадь",
+          "value": "54 м²"
+        }
+      ],
+      "video": ""
+    },
+    {
+      "id": "example-2021-2",
+      "status": "draft",
+      "order": 20,
+      "example": true,
+      "title": "Выставочный стенд · 72 м²",
+      "category": "",
+      "exhibition": "Название выставки (пример 1)",
+      "city": "Москва",
+      "year": 2021,
+      "description": "",
+      "cover": "",
+      "photos": [
+        "static/img/stand/frame-156.webp",
+        "static/img/stand/frame-148.webp",
+        "static/img/stand/frame-134.webp",
+        "static/img/stand/frame-118.webp",
+        "static/img/stand/frame-159.webp"
+      ],
+      "specs": [
+        {
+          "label": "Площадь",
+          "value": "72 м²"
+        }
+      ],
+      "video": ""
+    },
+    {
+      "id": "example-2021-3",
+      "status": "draft",
+      "order": 30,
+      "example": true,
+      "title": "Выставочный стенд · 90 м²",
+      "category": "",
+      "exhibition": "Название выставки (пример 2)",
+      "city": "Екатеринбург",
+      "year": 2021,
+      "description": "",
+      "cover": "",
+      "photos": [
+        "static/img/stand/frame-150.webp",
+        "static/img/stand/frame-159.webp",
+        "static/img/stand/frame-144.webp",
+        "static/img/stand/frame-130.webp",
+        "static/img/stand/frame-110.webp"
+      ],
+      "specs": [
+        {
+          "label": "Площадь",
+          "value": "90 м²"
+        }
+      ],
+      "video": ""
+    },
+    {
+      "id": "example-2022-1",
+      "status": "draft",
+      "order": 10,
+      "example": true,
+      "title": "Выставочный стенд · 72 м²",
+      "category": "",
+      "exhibition": "Название выставки (пример 1)",
+      "city": "Дубай",
+      "year": 2022,
+      "description": "",
+      "cover": "",
+      "photos": [
+        "static/img/stand/frame-159.webp",
+        "static/img/stand/frame-152.webp",
+        "static/img/stand/frame-140.webp",
+        "static/img/stand/frame-126.webp",
+        "static/img/stand/frame-104.webp"
+      ],
+      "specs": [
+        {
+          "label": "Площадь",
+          "value": "72 м²"
+        }
+      ],
+      "video": ""
+    },
+    {
+      "id": "example-2022-2",
+      "status": "draft",
+      "order": 20,
+      "example": true,
+      "title": "Выставочный стенд · 90 м²",
+      "category": "",
+      "exhibition": "Название выставки (пример 1)",
+      "city": "Санкт-Петербург",
+      "year": 2022,
+      "description": "",
+      "cover": "",
+      "photos": [
+        "static/img/stand/frame-156.webp",
+        "static/img/stand/frame-148.webp",
+        "static/img/stand/frame-134.webp",
+        "static/img/stand/frame-118.webp",
+        "static/img/stand/frame-159.webp"
+      ],
+      "specs": [
+        {
+          "label": "Площадь",
+          "value": "90 м²"
+        }
+      ],
+      "video": ""
+    },
+    {
+      "id": "example-2022-3",
+      "status": "draft",
+      "order": 30,
+      "example": true,
+      "title": "Выставочный стенд · 120 м²",
+      "category": "",
+      "exhibition": "Название выставки (пример 2)",
+      "city": "Казань",
+      "year": 2022,
+      "description": "",
+      "cover": "",
+      "photos": [
+        "static/img/stand/frame-150.webp",
+        "static/img/stand/frame-159.webp",
+        "static/img/stand/frame-144.webp",
+        "static/img/stand/frame-130.webp",
+        "static/img/stand/frame-110.webp"
+      ],
+      "specs": [
+        {
+          "label": "Площадь",
+          "value": "120 м²"
+        }
+      ],
+      "video": ""
+    },
+    {
+      "id": "example-2023-1",
+      "status": "draft",
+      "order": 10,
+      "example": true,
+      "title": "Выставочный стенд · 90 м²",
+      "category": "",
+      "exhibition": "Название выставки (пример 1)",
+      "city": "Москва",
+      "year": 2023,
+      "description": "",
+      "cover": "",
+      "photos": [
+        "static/img/stand/frame-159.webp",
+        "static/img/stand/frame-152.webp",
+        "static/img/stand/frame-140.webp",
+        "static/img/stand/frame-126.webp",
+        "static/img/stand/frame-104.webp"
+      ],
+      "specs": [
+        {
+          "label": "Площадь",
+          "value": "90 м²"
+        }
+      ],
+      "video": ""
+    },
+    {
+      "id": "example-2023-2",
+      "status": "draft",
+      "order": 20,
+      "example": true,
+      "title": "Выставочный стенд · 120 м²",
+      "category": "",
+      "exhibition": "Название выставки (пример 1)",
+      "city": "Екатеринбург",
+      "year": 2023,
+      "description": "",
+      "cover": "",
+      "photos": [
+        "static/img/stand/frame-156.webp",
+        "static/img/stand/frame-148.webp",
+        "static/img/stand/frame-134.webp",
+        "static/img/stand/frame-118.webp",
+        "static/img/stand/frame-159.webp"
+      ],
+      "specs": [
+        {
+          "label": "Площадь",
+          "value": "120 м²"
+        }
+      ],
+      "video": ""
+    },
+    {
+      "id": "example-2023-3",
+      "status": "draft",
+      "order": 30,
+      "example": true,
+      "title": "Выставочный стенд · 36 м²",
+      "category": "",
+      "exhibition": "Название выставки (пример 2)",
+      "city": "Сочи",
+      "year": 2023,
+      "description": "",
+      "cover": "",
+      "photos": [
+        "static/img/stand/frame-150.webp",
+        "static/img/stand/frame-159.webp",
+        "static/img/stand/frame-144.webp",
+        "static/img/stand/frame-130.webp",
+        "static/img/stand/frame-110.webp"
+      ],
+      "specs": [
+        {
+          "label": "Площадь",
+          "value": "36 м²"
+        }
+      ],
+      "video": ""
+    },
+    {
+      "id": "example-2024-1",
+      "status": "published",
+      "order": 10,
+      "example": true,
+      "title": "Выставочный стенд · 120 м²",
+      "category": "",
+      "exhibition": "Название выставки (пример 1)",
+      "city": "Санкт-Петербург",
+      "year": 2024,
+      "description": "",
+      "cover": "",
+      "photos": [
+        "static/img/stand/frame-159.webp",
+        "static/img/stand/frame-152.webp",
+        "static/img/stand/frame-140.webp",
+        "static/img/stand/frame-126.webp",
+        "static/img/stand/frame-104.webp"
+      ],
+      "specs": [
+        {
+          "label": "Площадь",
+          "value": "120 м²"
+        }
+      ],
+      "video": ""
+    },
+    {
+      "id": "example-2024-2",
+      "status": "draft",
+      "order": 20,
+      "example": true,
+      "title": "Выставочный стенд · 36 м²",
+      "category": "",
+      "exhibition": "Название выставки (пример 1)",
+      "city": "Казань",
+      "year": 2024,
+      "description": "",
+      "cover": "",
+      "photos": [
+        "static/img/stand/frame-156.webp",
+        "static/img/stand/frame-148.webp",
+        "static/img/stand/frame-134.webp",
+        "static/img/stand/frame-118.webp",
+        "static/img/stand/frame-159.webp"
+      ],
+      "specs": [
+        {
+          "label": "Площадь",
+          "value": "36 м²"
+        }
+      ],
+      "video": ""
+    },
+    {
+      "id": "example-2024-3",
+      "status": "draft",
+      "order": 30,
+      "example": true,
+      "title": "Выставочный стенд · 54 м²",
+      "category": "",
+      "exhibition": "Название выставки (пример 2)",
+      "city": "Новосибирск",
+      "year": 2024,
+      "description": "",
+      "cover": "",
+      "photos": [
+        "static/img/stand/frame-150.webp",
+        "static/img/stand/frame-159.webp",
+        "static/img/stand/frame-144.webp",
+        "static/img/stand/frame-130.webp",
+        "static/img/stand/frame-110.webp"
+      ],
+      "specs": [
+        {
+          "label": "Площадь",
+          "value": "54 м²"
+        }
+      ],
+      "video": ""
+    },
+    {
+      "id": "example-2025-1",
+      "status": "published",
+      "order": 10,
+      "example": true,
+      "title": "Выставочный стенд · 36 м²",
+      "category": "",
+      "exhibition": "Название выставки (пример 1)",
+      "city": "Екатеринбург",
+      "year": 2025,
+      "description": "",
+      "cover": "",
+      "photos": [
+        "static/img/stand/frame-159.webp",
+        "static/img/stand/frame-152.webp",
+        "static/img/stand/frame-140.webp",
+        "static/img/stand/frame-126.webp",
+        "static/img/stand/frame-104.webp"
+      ],
+      "specs": [
+        {
+          "label": "Площадь",
+          "value": "36 м²"
+        }
+      ],
+      "video": ""
+    },
+    {
+      "id": "example-2025-2",
+      "status": "draft",
+      "order": 20,
+      "example": true,
+      "title": "Выставочный стенд · 54 м²",
+      "category": "",
+      "exhibition": "Название выставки (пример 1)",
+      "city": "Сочи",
+      "year": 2025,
+      "description": "",
+      "cover": "",
+      "photos": [
+        "static/img/stand/frame-156.webp",
+        "static/img/stand/frame-148.webp",
+        "static/img/stand/frame-134.webp",
+        "static/img/stand/frame-118.webp",
+        "static/img/stand/frame-159.webp"
+      ],
+      "specs": [
+        {
+          "label": "Площадь",
+          "value": "54 м²"
+        }
+      ],
+      "video": ""
+    },
+    {
+      "id": "example-2025-3",
+      "status": "draft",
+      "order": 30,
+      "example": true,
+      "title": "Выставочный стенд · 72 м²",
+      "category": "",
+      "exhibition": "Название выставки (пример 2)",
+      "city": "Дубай",
+      "year": 2025,
+      "description": "",
+      "cover": "",
+      "photos": [
+        "static/img/stand/frame-150.webp",
+        "static/img/stand/frame-159.webp",
+        "static/img/stand/frame-144.webp",
+        "static/img/stand/frame-130.webp",
+        "static/img/stand/frame-110.webp"
+      ],
+      "specs": [
+        {
+          "label": "Площадь",
+          "value": "72 м²"
+        }
+      ],
+      "video": ""
+    },
+    {
+      "id": "example-2026-1",
+      "status": "published",
+      "order": 10,
+      "example": false,
+      "title": "CRVU · 54 м²",
+      "category": "Двухэтажный стенд",
+      "exhibition": "Застройщики",
+      "city": "Москва",
+      "year": 2026,
+      "description": "",
+      "cover": "static/img/stand/frame-152.webp",
+      "photos": [
+        "static/img/stand/frame-152.webp",
+        "static/img/stand/frame-159.webp",
+        "static/img/stand/frame-140.webp",
+        "static/img/stand/frame-126.webp",
+        "static/img/stand/frame-104.webp",
+        "portfolio/example-2026-1/01.webp"
+      ],
+      "specs": [
+        {
+          "label": "Площадь",
+          "value": "54 м²"
+        }
+      ],
+      "video": ""
+    },
+    {
+      "id": "example-2026-2",
+      "status": "draft",
+      "order": 40,
+      "example": true,
+      "title": "Выставочный стенд · 72 м²",
+      "category": "",
+      "exhibition": "Название выставки (пример 1)",
+      "city": "Новосибирск",
+      "year": 2026,
+      "description": "",
+      "cover": "",
+      "photos": [
+        "static/img/stand/frame-156.webp",
+        "static/img/stand/frame-148.webp",
+        "static/img/stand/frame-134.webp",
+        "static/img/stand/frame-118.webp",
+        "static/img/stand/frame-159.webp"
+      ],
+      "specs": [
+        {
+          "label": "Площадь",
+          "value": "72 м²"
+        }
+      ],
+      "video": ""
+    },
+    {
+      "id": "example-2026-3",
+      "status": "published",
+      "order": 20,
+      "example": true,
+      "title": "Выставочный стенд · 90 м²",
+      "category": "",
+      "exhibition": "Название выставки (пример 2)",
+      "city": "Москва",
+      "year": 2026,
+      "description": "",
+      "cover": "",
+      "photos": [
+        "static/img/stand/frame-150.webp",
+        "static/img/stand/frame-159.webp",
+        "static/img/stand/frame-144.webp",
+        "static/img/stand/frame-130.webp",
+        "static/img/stand/frame-110.webp"
+      ],
+      "specs": [
+        {
+          "label": "Площадь",
+          "value": "90 м²"
+        }
+      ],
+      "video": ""
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{% extends "admin/base.html" %}
+{% block title %}Удаление проекта{% endblock %}
+{% block content %}
+<section class="panel panel-danger" aria-labelledby="delete-title">
+  <h1 id="delete-title">Удалить проект «{{ project.title }}»?</h1>
+  <p>Проект исчезнет с сайта и из списка. Копия данных и папка с фото сохранятся в <code>content/.history/</code> — их можно восстановить вручную.</p>
+  <p class="muted">Если проект нужно только скрыть, снимите его с публикации — он останется черновиком.</p>
+  <div class="actions">
+    <form method="post" action="{{ url_for('admin.delete_project', project_id=project.id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="button button-danger" type="submit">Удалить проект</button>
+    </form>
+    <a class="button" href="{{ url_for('admin.edit_project', project_id=project.id) }}">Отмена</a>
+  </div>
+</section>
+{% endblock %}

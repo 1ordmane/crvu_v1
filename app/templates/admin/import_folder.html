@@ -1,0 +1,88 @@
+{% extends "admin/base.html" %}
+{% block title %}Импорт папки{% endblock %}
+{% block head %}
+  <script src="{{ url_for('static', filename='js/admin-import.js') }}" defer></script>
+{% endblock %}
+{% block content %}
+<p class="back"><a href="{{ url_for('admin.projects') }}">← Все проекты</a></p>
+
+<div class="page-head">
+  <div>
+    <h1>Импорт папки проекта</h1>
+    <p class="muted">Выберите папку одного проекта — например, «Агрос. Трансфаир 40м2». Подойдут фото JPG, PNG и WebP;
+      PDF и служебные файлы (Thumbs.db, .DS_Store) не загружаются. Файлы на компьютере не меняются.</p>
+  </div>
+</div>
+
+{#- Отправка — обычной формой создания проекта: фото проходят тот же путь, что и на странице проекта.
+    admin-import.js показывает миниатюры, порядок и обложку до загрузки и оставляет в поле только фото. #}
+<form class="panel stack" method="post" enctype="multipart/form-data" action="{{ url_for('admin.new_project') }}"
+      data-folder-import data-max-files="{{ limits.files }}" data-max-file-bytes="{{ limits.image_mb * 1048576 }}"
+      data-max-total-bytes="{{ limits.upload_mb * 1048576 }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label class="field">
+    <span>Папка проекта</span>
+    <input type="file" name="photos" multiple webkitdirectory required data-folder-input aria-describedby="folder-hint">
+    <small id="folder-hint">Нажмите и выберите папку (не отдельные файлы). За раз — не больше {{ limits.files }} фото,
+      до {{ limits.image_mb }} МБ каждое и {{ limits.upload_mb }} МБ всего; остальные можно добавить потом на странице проекта.</small>
+  </label>
+
+  <p class="muted" data-folder-summary aria-live="polite" hidden></p>
+  <div class="message message-error" role="alert" data-folder-problems hidden></div>
+  <ol class="photo-grid" data-folder-preview aria-label="Фото в порядке загрузки" hidden></ol>
+
+  <div class="field-row">
+    <label class="field">
+      <span>Название компании / стенда <em>обязательно</em></span>
+      <input name="title" required maxlength="200" data-folder-title>
+    </label>
+    <label class="field">
+      <span>Выставка <em>обязательно</em></span>
+      <input name="exhibition" required maxlength="200" list="exhibition-list" autocomplete="off">
+      {%- include "admin/_exhibition_list.html" %}
+    </label>
+  </div>
+  <div class="field-row field-row-4">
+    <label class="field">
+      <span>Месяц <em>обязательно</em></span>
+      <select name="month" required>
+        <option value="">—</option>
+        {%- for name in months %}
+        <option value="{{ loop.index }}">{{ name }}</option>
+        {%- endfor %}
+      </select>
+    </label>
+    <label class="field">
+      <span>Год <em>обязательно</em></span>
+      <select name="year" required>
+        {%- for y in years %}
+        <option value="{{ y }}"{% if y == current_year %} selected{% endif %}>{{ y }}</option>
+        {%- endfor %}
+      </select>
+    </label>
+    <label class="field">
+      <span>Площадь, м² <em>обязательно</em></span>
+      <input name="area" required inputmode="decimal" pattern="[0-9]{1,6}([.,][0-9]{1,2})?" maxlength="9" placeholder="40,5">
+    </label>
+    <label class="field">
+      <span>Планировка стенда <em>обязательно</em></span>
+      <select name="layout" required>
+        <option value="">—</option>
+        {%- for name in layouts %}
+        <option value="{{ name }}">{{ name }}</option>
+        {%- endfor %}
+      </select>
+    </label>
+  </div>
+  <p class="muted">Описание и видео можно добавить потом на странице проекта.</p>
+  <label class="checkbox">
+    <input type="checkbox" name="publish">
+    <span>Опубликовать сразу — иначе проект сохранится черновиком</span>
+  </label>
+
+  <div class="actions">
+    <button class="button button-primary button-large" type="submit" data-folder-submit>Импортировать</button>
+  </div>
+  <p class="muted" data-folder-sending hidden>Загрузка… Большие фото отправляются до минуты — не закрывайте страницу.</p>
+</form>
+{% endblock %}

@@ -1,0 +1,69 @@
+{
+  "_comment": "Контакты. Пустые значения на сайте не показываются. type: phone (ссылка tel:), email (ссылка mailto:), link (ссылка http/https), address или text (без ссылки). socials — соцсети и мессенджеры в разделе «Контакты»: network (telegram, max, vk — выбирает значок), label (подпись), url (http/https; пусто — не показывается). quick — меню плавающей кнопки «Связаться»: network (phone, telegram, whatsapp, max — выбирает значок), label (подпись), url (у phone — tel:+цифры, у остальных — https; пусто — пункта нет в меню).",
+  "contacts": [
+    {
+      "type": "phone",
+      "label": "Телефон",
+      "value": "+7 (495) 106-70-22"
+    },
+    {
+      "type": "email",
+      "label": "Email",
+      "value": "info@crvu.ru"
+    },
+    {
+      "type": "address",
+      "label": "Офис",
+      "value": "123007, г. Москва, 2-й Хорошёвский пр-д, дом 7, кор. 1"
+    },
+    {
+      "type": "text",
+      "label": "Время работы",
+      "value": "Ежедневно с 9:30 до 18:30"
+    },
+    {
+      "type": "link",
+      "label": "Мессенджеры",
+      "value": ""
+    }
+  ],
+  "socials": [
+    {
+      "network": "telegram",
+      "label": "Telegram",
+      "url": "https://t.me/crvu_ru"
+    },
+    {
+      "network": "max",
+      "label": "MAX",
+      "url": "https://max.ru/join/gS7x1LH_gv79ZiVED96E272hGNYkaW0REvIzXyJGoW8"
+    },
+    {
+      "network": "vk",
+      "label": "ВКонтакте",
+      "url": "https://vk.ru/crvu_stends"
+    }
+  ],
+  "quick": [
+    {
+      "network": "phone",
+      "label": "Позвонить",
+      "url": "tel:+79267341178"
+    },
+    {
+      "network": "telegram",
+      "label": "Telegram",
+      "url": "https://t.me/+79267341178"
+    },
+    {
+      "network": "whatsapp",
+      "label": "WhatsApp",
+      "url": "https://wa.me/79267341178"
+    },
+    {
+      "network": "max",
+      "label": "MAX",
+      "url": ""
+    }
+  ]
+}

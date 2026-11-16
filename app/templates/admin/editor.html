@@ -1,0 +1,180 @@
+{% extends "admin/base.html" %}
+{% from "admin/_video_picker.html" import video_picker %}
+{% from "admin/_video_library.html" import video_library %}
+{% block title %}Редактор{% endblock %}
+{% block head %}
+  <script src="{{ url_for('static', filename='js/admin-picker.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/admin-videos.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/editor.js') }}" defer></script>
+{% endblock %}
+{% block body_attrs %} class="is-editor"{% endblock %}
+{% block content %}
+<div class="editor">
+  <div class="editor-bar">
+    <div class="editor-status" role="status">
+      {%- if pending %}
+      <strong>Черновик не опубликован</strong> <span class="muted">({{ pending|join(", ") }}). На сайте пока прежняя версия.</span>
+      {%- else %}
+      <strong>Черновика нет</strong> <span class="muted">— в предпросмотре опубликованная версия.</span>
+      {%- endif %}
+      <span class="editor-dirty" data-editor-dirty hidden>Есть несохранённые изменения — сохраните черновик.</span>
+    </div>
+    <div class="editor-widths" role="group" aria-label="Ширина предпросмотра" data-editor-widths hidden>
+      <button class="button button-small" type="button" data-preview-width="390">390</button>
+      <button class="button button-small" type="button" data-preview-width="768">768</button>
+      <button class="button button-small" type="button" data-preview-width="1440" aria-pressed="true">1440</button>
+    </div>
+    <div class="editor-actions">
+      <a class="button button-small" href="{{ url_for('admin.editor_history') }}">История версий</a>
+      <form method="post" action="{{ url_for('admin.editor_discard') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="button button-small" type="submit"{% if not pending %} disabled{% endif %}>Отменить черновик</button>
+      </form>
+      <form method="post" action="{{ url_for('admin.editor_publish') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="button button-small button-primary" type="submit" data-editor-publish{% if not pending %} disabled{% endif %}>Опубликовать</button>
+      </form>
+    </div>
+  </div>
+
+  {%- if errors %}
+  <div class="message message-error" role="alert">
+    <p>Черновик не сохранён:</p>
+    <ul>
+      {%- for error in errors %}
+      <li>{{ error }}</li>
+      {%- endfor %}
+    </ul>
+  </div>
+  {%- endif %}
+
+  <div class="editor-layout">
+    <div class="editor-stage" data-editor-stage>
+      <iframe class="editor-frame" src="{{ url_for('admin.editor_preview') }}" title="Предпросмотр главной" data-editor-frame></iframe>
+    </div>
+
+    <form class="editor-panel" method="post" action="{{ url_for('admin.editor_draft') }}" data-editor-form data-video-check="{{ url_for('admin.video_check') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {#- Enter в любом поле — обычное сохранение черновика, а не первая кнопка группы «Видеоотзывы» #}
+      <button class="visually-hidden" type="submit" tabindex="-1" aria-hidden="true">Сохранить черновик</button>
+      {%- for name, version in versions.items() %}
+      <input type="hidden" name="version_{{ name }}" value="{{ version }}">
+      {%- endfor %}
+      <p class="muted editor-hint">Нажмите на текст в предпросмотре — откроется его поле; тексты разделов и контакты — в группах ниже. Правки попадут на сайт только после «Опубликовать».</p>
+      <p class="editor-note" data-editor-note role="status" hidden></p>
+
+      {%- for group in groups %}
+      <details class="editor-group"{% if loop.index <= 2 or group.key == open_group %} open{% endif %}>
+        <summary>{{ group.title }}</summary>
+        {%- set picker = pickers.get(group.key) %}
+        {%- if picker and picker.kind == "videos" %}
+        {{ video_picker(picker, loop.index) }}
+        {%- if video_lib %}{{ video_library(video_lib) }}{% endif %}
+        {%- elif picker %}
+        {#- Выбор проектов из портфолио: в home.json сохраняются только id и порядок #}
+        <div class="picker" data-picker data-picker-field="{{ picker.field }}" data-picker-max="{{ picker.max }}">
+          <h3>Проекты на главной</h3>
+          <p class="muted picker-help">Карточки берут название, выставку и фото из портфолио. Выбор сохраняется кнопкой «Сохранить черновик», на сайт попадает после «Опубликовать».</p>
+          <ol class="picker-selected" data-picker-list></ol>
+          <p class="muted" data-picker-empty hidden>Проекты не выбраны — блок на главной не показывается.</p>
+          <button class="button button-small" type="button" data-picker-open hidden>Выбрать проекты…</button>
+          <label class="field" data-picker-raw>
+            <span>Проекты на главной (id через запятую, по порядку)</span>
+            <input name="{{ picker.field }}" value="{{ picker.value }}" data-picker-input>
+          </label>
+
+          <dialog class="picker-dialog" aria-labelledby="picker-title-{{ loop.index }}" data-picker-dialog>
+            <div class="picker-head">
+              <h2 id="picker-title-{{ loop.index }}">Проекты для «Реализовано»</h2>
+              <button class="button button-small" type="button" data-picker-close>Закрыть</button>
+            </div>
+            <div class="picker-body">
+              <section class="picker-chosen-wrap" aria-labelledby="picker-chosen-title-{{ loop.index }}">
+                <div class="picker-section-head">
+                  <h3 id="picker-chosen-title-{{ loop.index }}">Проекты на главной</h3>
+                  <p class="picker-count" data-picker-count aria-live="polite"></p>
+                </div>
+                <p class="muted picker-section-note">Порядок — как на главной. Перетащите строку или нажмите ↑/↓.</p>
+                <ol class="picker-chosen" data-picker-chosen></ol>
+                <p class="picker-chosen-empty" data-picker-chosen-empty hidden>Пока пусто — добавьте проекты ниже.</p>
+              </section>
+              <section class="picker-catalog" aria-labelledby="picker-catalog-title-{{ loop.index }}">
+                <div class="picker-section-head">
+                  <h3 id="picker-catalog-title-{{ loop.index }}">Добавить проекты</h3>
+                </div>
+                <div class="picker-tools">
+                  <input type="search" class="picker-search" placeholder="Компания или выставка" aria-label="Поиск по компании или выставке" data-picker-search>
+                  <select class="picker-year" aria-label="Год" data-picker-year>
+                    <option value="">Все годы</option>
+                    {%- for year in catalog|selectattr("published")|map(attribute="year")|select|unique|sort(reverse=true) %}
+                    <option value="{{ year }}">{{ year }}</option>
+                    {%- endfor %}
+                  </select>
+                </div>
+                <ul class="picker-grid" data-picker-grid>
+                  {%- for item in catalog %}
+                  {#- Черновики в каталоге не показываются (на главной их нет), но нужны для подписи уже выбранных #}
+                  <li{% if not item.published %} hidden data-picker-draft{% endif %}>
+                    <button class="picker-card" type="button" aria-pressed="false" data-picker-card
+                            data-id="{{ item.id }}" data-title="{{ item.title }}" data-event="{{ item.event }}"
+                            data-year="{{ item.year or '' }}" data-published="{{ 1 if item.published else 0 }}">
+                      <span class="picker-thumb">
+                        {%- if item.thumb %}<img src="{{ item.thumb }}" alt="" width="240" height="180" loading="lazy" decoding="async">{% endif %}
+                      </span>
+                      <span class="picker-card-text">
+                        <span class="picker-title">{{ item.title }}</span>
+                        <span class="picker-meta">{{ item.event }}{% if item.event and item.year %}, {% endif %}{{ item.year or "" }}</span>
+                      </span>
+                      <span class="picker-action" data-picker-action>Добавить</span>
+                    </button>
+                  </li>
+                  {%- endfor %}
+                </ul>
+                <p class="muted" data-picker-nothing hidden>Ничего не найдено — измените поиск или год.</p>
+                {%- set drafts = catalog|rejectattr("published")|list %}
+                {%- if drafts %}
+                <p class="muted picker-section-note">Черновики портфолио ({{ drafts|length }}) здесь не показаны: на главную попадают только опубликованные проекты.</p>
+                {%- endif %}
+              </section>
+            </div>
+            <div class="picker-foot">
+              <button class="button button-primary" type="button" data-picker-done>Готово</button>
+              <button class="button" type="button" data-picker-close>Отмена</button>
+              <p class="picker-changed" data-picker-changed hidden>Есть изменения — «Готово» перенесёт их в редактор.</p>
+            </div>
+          </dialog>
+        </div>
+        {%- endif %}
+        {%- for title, fields in group.sections %}
+        <h3>{{ title }}</h3>
+        {%- for field in fields %}
+        {%- set name = field_name(field) %}
+        {%- set field_id = "e-" ~ name|replace(".", "-") %}
+        {%- set hint = field.hint or ("Пусто — «" ~ field.default ~ "»." if field.default else "") %}
+        <label class="field" data-field="{{ name }}">
+          <span>{{ field.label }}{% if field.required %} <em>обязательно</em>{% endif %}</span>
+          {%- if field.kind in ("lines", "paragraphs") %}
+          <textarea name="{{ name }}" id="{{ field_id }}" rows="{{ 4 if field.kind == 'lines' else 6 }}"{% if hint %} aria-describedby="{{ field_id }}-hint"{% endif %}>{{ values[name] }}</textarea>
+          {%- elif field.kind == "text" %}
+          <textarea name="{{ name }}" id="{{ field_id }}" rows="3" maxlength="{{ field.limit }}"{% if field.required %} required{% endif %}{% if hint %} aria-describedby="{{ field_id }}-hint"{% endif %}>{{ values[name] }}</textarea>
+          {%- elif field.kind == "int" %}
+          <input name="{{ name }}" id="{{ field_id }}" value="{{ values[name] }}" inputmode="numeric" pattern="[0-9]*" required{% if hint %} aria-describedby="{{ field_id }}-hint"{% endif %}>
+          {%- else %}
+          <input name="{{ name }}" id="{{ field_id }}" value="{{ values[name] }}" maxlength="{{ field.limit }}"{% if field.required %} required{% endif %}{% if hint %} aria-describedby="{{ field_id }}-hint"{% endif %}>
+          {%- endif %}
+          {%- if hint %}
+          <small id="{{ field_id }}-hint">{{ hint }}</small>
+          {%- endif %}
+        </label>
+        {%- endfor %}
+        {%- endfor %}
+      </details>
+      {%- endfor %}
+
+      <div class="editor-save">
+        <button class="button button-primary" type="submit">Сохранить черновик</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

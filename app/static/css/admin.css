@@ -1,0 +1,1944 @@
+/* Админ-панель: отдельные стили, публичный style.css не подключается. */
+
+@font-face {
+  font-family: "Onest";
+  src: url("../fonts/onest-cyrillic.woff2") format("woff2");
+  font-weight: 400 800;
+  font-display: swap;
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+@font-face {
+  font-family: "Onest";
+  src: url("../fonts/onest-latin.woff2") format("woff2");
+  font-weight: 400 800;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2190-2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light;
+
+  --brand-strong: #D93A1B;
+  --brand-strong-hover: #C2321A;
+  --brand-text: #C9361A;
+  --ink: #2C2829;
+  --muted: #6A6465;
+  --line: #E3DEDB;
+  --line-strong: #CFC8C4;
+  --paper: #F6F4F1;
+  --surface: #FFFFFF;
+  --hall: #0E1011;
+  --on-dark: #F6F4F1;
+  --ok-bg: #E6F2EA;
+  --ok-ink: #1F5E36;
+  --error-bg: #FBE9E5;
+  --error-ink: #9A2A14;
+  --draft-bg: #EEEAE7;
+  --focus: #1A5FB4;
+
+  --font: "Onest", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --fs-xs: 0.8125rem;
+  --fs-sm: 0.875rem;
+  --fs-base: 1rem;
+  --fs-md: 1.125rem;
+  --fs-lg: 1.5rem;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+
+  --gutter: 1rem;
+  --container: 64rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.875rem;
+  --radius-pill: 999px;
+  --tap: 2.75rem;
+  --thumb-w: 6rem;
+}
+
+@media (min-width: 720px) {
+  :root {
+    --gutter: 2rem;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Скрытое атрибутом hidden не показывается, даже если у класса свой display (кнопки, сообщения) */
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: var(--fs-base);
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: var(--brand-text);
+}
+
+h1,
+h2 {
+  margin: 0;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: var(--fs-lg);
+}
+
+h2 {
+  font-size: var(--fs-md);
+}
+
+p {
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.muted,
+small {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+/* Шапка */
+
+.admin-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--gutter);
+  background: var(--hall);
+  color: var(--on-dark);
+}
+
+.admin-brand {
+  color: var(--on-dark);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.admin-brand span {
+  font-weight: 400;
+  opacity: 0.75;
+}
+
+.admin-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.admin-nav a,
+.link-button {
+  color: var(--on-dark);
+  font: inherit;
+  font-size: var(--fs-sm);
+}
+
+.link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.admin-nav form {
+  margin: 0;
+}
+
+.admin-main {
+  display: grid;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--space-5) var(--gutter) var(--space-6);
+}
+
+/* Сообщения */
+
+.messages {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.message {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+}
+
+.message ul {
+  margin: var(--space-2) 0 0;
+  padding-left: var(--space-5);
+}
+
+.message-ok {
+  background: var(--ok-bg);
+  color: var(--ok-ink);
+}
+
+.message-error {
+  background: var(--error-bg);
+  color: var(--error-ink);
+}
+
+.message-note {
+  background: var(--draft-bg);
+  color: var(--ink);
+}
+
+/* Кнопки */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button:hover {
+  border-color: var(--ink);
+}
+
+.button-primary {
+  border-color: var(--brand-strong);
+  background: var(--brand-strong);
+  color: #FFFFFF;
+}
+
+.button-primary:hover {
+  border-color: var(--brand-strong-hover);
+  background: var(--brand-strong-hover);
+}
+
+.button-danger {
+  border-color: var(--error-ink);
+  background: var(--error-ink);
+  color: #FFFFFF;
+}
+
+.button-danger-quiet {
+  color: var(--error-ink);
+}
+
+.button-large {
+  min-height: 3rem;
+  padding: 0 var(--space-6);
+  font-size: var(--fs-md);
+}
+
+.button-small {
+  min-height: 2.25rem;
+  padding: 0 var(--space-3);
+  font-size: var(--fs-sm);
+}
+
+.icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.icon-button:disabled,
+.button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* Формы */
+
+.panel {
+  padding: var(--space-5) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.panel-danger {
+  display: grid;
+  gap: var(--space-4);
+  border-color: var(--error-ink);
+}
+
+.stack {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.field {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.field > span {
+  font-weight: 600;
+}
+
+.field em {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-style: normal;
+  font-weight: 400;
+}
+
+input:not([type="checkbox"]),
+textarea,
+select {
+  width: 100%;
+  min-height: var(--tap);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+
+input[type="file"] {
+  padding: var(--space-2);
+}
+
+textarea {
+  resize: vertical;
+}
+
+select {
+  cursor: pointer;
+}
+
+.field-row {
+  display: grid;
+  gap: var(--space-4);
+  align-items: start;
+}
+
+/* Сетка полей проекта (project_form.html). Телефон: две колонки — рядом только месяц и год, остальное
+   во всю ширину; от 640 px — по две; от 1000 px — четыре (название и выставка по половине, видео —
+   три четверти, описание — во всю ширину). Колонки minmax(0, 1fr): длинное значение не раздвигает сетку */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.form-grid > .field {
+  grid-column: 1 / -1;
+  gap: 0.375rem;
+}
+
+.form-grid > .field-short {
+  grid-column: auto;
+}
+
+/* Подпись и пометка — одна строка, пока помещаются; на узкой колонке пометка переносится целиком */
+.form-grid .field > span {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--space-1);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.form-grid .field em {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+/* Поля одной высоты: select в разных браузерах иначе выше или ниже input */
+.form-grid input,
+.form-grid select {
+  height: var(--tap);
+  min-height: 0;
+  padding: 0 var(--space-3);
+  font-size: var(--fs-base);
+  line-height: 1.25;
+}
+
+.form-grid textarea {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--fs-base);
+}
+
+.form-grid small {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  line-height: 1.4;
+}
+
+.specs {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.specs legend {
+  margin-bottom: var(--space-1);
+  padding: 0;
+  font-weight: 600;
+}
+
+.spec-row {
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.checkbox input {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0.15rem 0 0;
+  accent-color: var(--brand-strong);
+}
+
+.upload {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+}
+
+/* Вход */
+
+.login-card {
+  display: grid;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 24rem;
+  margin: var(--space-6) auto 0;
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+/* Список проектов */
+
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.page-head > div {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.page-head form {
+  margin: 0;
+}
+
+.page-head > .actions {
+  display: flex;
+}
+
+.back {
+  font-size: var(--fs-sm);
+}
+
+/* Поиск и фильтры списка проектов, форма новой выставки */
+
+.filters {
+  display: grid;
+  gap: var(--space-3);
+  align-items: end;
+}
+
+.filter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.filter-actions .button {
+  white-space: nowrap;
+}
+
+.list-summary {
+  margin: 0;
+  font-size: var(--fs-sm);
+}
+
+.list-summary:empty {
+  display: none;
+}
+
+/* Дерево «год → месяц → выставка»: <details> сворачивается без скрипта */
+
+.year-group,
+.month-group {
+  display: grid;
+  gap: var(--space-3);
+  scroll-margin-top: var(--space-4);
+}
+
+.month-group {
+  padding-left: var(--space-4);
+  border-left: 2px solid var(--line);
+}
+
+.year-group > summary,
+.month-group > summary,
+.expo-projects > summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap);
+  list-style: none;
+  cursor: pointer;
+}
+
+.year-group > summary {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
+
+.month-group > summary {
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+
+.year-group > summary::-webkit-details-marker,
+.month-group > summary::-webkit-details-marker,
+.expo-projects > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Стрелка сворачивания: ▸ свёрнуто, ▾ раскрыто */
+.year-group > summary::before,
+.month-group > summary::before,
+.expo-projects > summary::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-top: 0.35rem solid transparent;
+  border-bottom: 0.35rem solid transparent;
+  border-left: 0.5rem solid var(--muted);
+  transition: transform 0.15s ease;
+}
+
+.year-group[open] > summary::before,
+.month-group[open] > summary::before,
+.expo-projects[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .year-group > summary::before,
+  .month-group > summary::before,
+  .expo-projects > summary::before {
+    transition: none;
+  }
+}
+
+.group-count {
+  min-width: 1.75rem;
+  padding: 0.1rem var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--draft-bg);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  text-align: center;
+}
+
+.expo-group {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.expo-name {
+  margin: 0;
+  font-size: var(--fs-base);
+  font-weight: 600;
+}
+
+.expo-name a {
+  color: var(--ink);
+}
+
+/* Страница «Выставки» */
+
+.expo-row {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.expo-row + .expo-row {
+  border-top: 1px solid var(--line);
+}
+
+.expo-project-links {
+  display: grid;
+  gap: var(--space-1);
+  margin: var(--space-2) 0 0;
+  padding-left: var(--space-6);
+  font-size: var(--fs-sm);
+}
+
+.project-list,
+.photo-grid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.project-list {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.project-row {
+  display: grid;
+  grid-template-columns: var(--thumb-w) minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3);
+  scroll-margin-top: var(--space-4);
+}
+
+.project-row + .project-row {
+  border-top: 1px solid var(--line);
+}
+
+.thumb {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--draft-bg);
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-info {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.project-title {
+  color: var(--ink);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.project-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  grid-column: 1 / -1;
+}
+
+.row-actions form {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.1rem var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--draft-bg);
+  color: var(--ink);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.tag-published {
+  background: var(--ok-bg);
+  color: var(--ok-ink);
+}
+
+.tag-draft {
+  background: var(--draft-bg);
+}
+
+.empty {
+  color: var(--muted);
+}
+
+/* Фото проекта */
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: var(--space-4);
+}
+
+.photo-card {
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+}
+
+.photo-card img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  background: var(--draft-bg);
+}
+
+.photo-label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.photo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+/* Заявки с сайта: контакт крупно (ссылка для звонка или письма), ниже параметры стенда */
+.request-list {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.request-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-4);
+  margin: 0 0 var(--space-3);
+}
+
+.request-contact {
+  font-size: var(--fs-md);
+  font-weight: 700;
+}
+
+.request-stand {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.request-stand dt {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.request-stand dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.request-actions {
+  margin: var(--space-3) 0 0;
+}
+
+/* Панель под фото (admin-photos.js): сообщение о действии и «Сохранить изменения». Прилипает к низу
+   окна, пока виден блок фото, — сетка над ней не сдвигается */
+.photo-bar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.photo-bar .message {
+  flex: 1 1 18rem;
+  margin: 0;
+}
+
+@media (min-width: 720px) {
+  .panel {
+    padding: var(--space-5);
+  }
+
+  .field-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .field-row-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .form-grid > .field {
+    grid-column: auto;
+  }
+
+  .form-grid > .field-wide {
+    grid-column: 1 / -1;
+  }
+
+  .filters {
+    grid-template-columns: minmax(0, 2fr) repeat(4, minmax(0, 1fr)) auto;
+  }
+
+  .expo-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+
+  .project-row {
+    grid-template-columns: var(--thumb-w) minmax(0, 1fr) auto;
+  }
+
+  .row-actions {
+    grid-column: auto;
+    justify-content: flex-end;
+  }
+}
+
+/* Визуальный редактор главной: слева предпросмотр в рамке, справа поля.
+   Рамка без JS — во всю ширину области; с JS — нужной ширины и уменьшена масштабом. */
+
+.is-editor .admin-main {
+  max-width: none;
+}
+
+.editor {
+  --editor-h: calc(100vh - 11rem);
+  display: grid;
+  gap: var(--space-4);
+}
+
+.editor-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.editor-status {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.editor-dirty {
+  color: var(--error-ink);
+  font-weight: 600;
+}
+
+.editor-widths,
+.editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.editor-actions form {
+  margin: 0;
+}
+
+.editor-widths [aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--surface);
+}
+
+.editor-layout {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.editor-stage {
+  position: relative;
+  height: 70vh;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--hall);
+}
+
+.editor-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: var(--hall);
+}
+
+.editor-stage.is-scaled .editor-frame {
+  transform-origin: 0 0;
+}
+
+.editor-panel {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.editor-hint,
+.editor-note {
+  margin: 0;
+  font-size: var(--fs-sm);
+}
+
+.editor-note {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--draft-bg);
+}
+
+.editor-group {
+  border-top: 1px solid var(--line);
+  padding-top: var(--space-3);
+}
+
+.editor-group summary {
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.editor-group h3 {
+  margin: var(--space-4) 0 var(--space-2);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.editor-group .field {
+  margin-bottom: var(--space-3);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  transition: background-color 0.3s;
+}
+
+.editor-group .field.is-selected {
+  outline: 2px solid var(--focus);
+  background: var(--draft-bg);
+}
+
+.editor-save {
+  position: sticky;
+  bottom: 0;
+  padding: var(--space-3) 0 0;
+  background: var(--surface);
+}
+
+@media (min-width: 1100px) {
+  .editor-layout {
+    grid-template-columns: minmax(0, 1fr) 26rem;
+  }
+
+  .editor-stage,
+  .editor-panel {
+    height: var(--editor-h);
+  }
+
+  .editor-panel {
+    overflow-y: auto;
+  }
+}
+
+/* История версий */
+
+.history-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.history-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.history-list form {
+  margin: 0;
+}
+
+.history-when {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.history-file {
+  flex: 1;
+  color: var(--muted);
+}
+
+/* Выбор проектов для главной: список выбранных в панели и окно с карточками портфолио */
+
+.picker {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 var(--space-4);
+}
+
+.picker h3 {
+  margin: 0;
+}
+
+/* Скрытое скриптом (поле id для работы без JS, пустой список) — скрыто, даже если у класса свой display */
+.picker [hidden] {
+  display: none;
+}
+
+.picker-help {
+  margin: 0;
+  font-size: var(--fs-sm);
+}
+
+.picker-selected,
+.picker-chosen {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Строка выбранного проекта: номер, миниатюра, название и выставка, кнопки — в одну линию */
+.picker-row {
+  display: grid;
+  grid-template-columns: 1.5rem 3.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+.picker-row.is-missing {
+  border-color: var(--error-ink);
+  background: var(--error-bg);
+}
+
+.picker-row[draggable="true"] {
+  cursor: grab;
+}
+
+.picker-row.is-dragging {
+  border-style: dashed;
+  opacity: 0.6;
+}
+
+.picker-row-number {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.picker-row-thumb {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 0.25rem;
+  background: var(--draft-bg);
+}
+
+.picker-row-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.picker-row-text {
+  display: grid;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.picker-row-text strong,
+.picker-row-text small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.picker-row-text small {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.picker-row.is-missing small {
+  color: var(--error-ink);
+}
+
+.picker-row-actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+/* Маленькие кнопки строк: 2 rem — компактно, но попадать удобно; на телефоне — крупнее */
+.picker-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+}
+
+.picker-icon:hover:not(:disabled) {
+  border-color: var(--line-strong);
+  background: var(--paper);
+}
+
+.picker-icon[data-act="remove"]:hover {
+  border-color: var(--error-ink);
+  color: var(--error-ink);
+}
+
+.picker-icon:disabled {
+  color: var(--line-strong);
+  cursor: default;
+}
+
+.picker-dialog {
+  width: min(78rem, 100vw - 2rem);
+  height: calc(100dvh - 2rem);
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+/* Шапка и кнопки на месте, между ними прокручивается содержимое */
+.picker-dialog[open] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.picker-dialog::backdrop {
+  background: rgb(14 16 17 / 0.55);
+}
+
+.picker-head,
+.picker-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface);
+}
+
+.picker-head {
+  border-bottom: 1px solid var(--line);
+}
+
+.picker-head h2 {
+  margin: 0;
+  font-size: var(--fs-md);
+}
+
+.picker-foot {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  border-top: 1px solid var(--line);
+}
+
+.picker-changed {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.picker-body {
+  display: grid;
+  align-content: start;
+  gap: var(--space-5);
+  padding: var(--space-4);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.picker-chosen-wrap,
+.picker-catalog {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.picker-section-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.picker-section-head h3 {
+  margin: 0;
+  font-size: var(--fs-base);
+}
+
+.picker-count {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.picker-section-note,
+.picker-chosen-empty {
+  margin: 0;
+  font-size: var(--fs-sm);
+}
+
+.picker-chosen-empty {
+  padding: var(--space-3);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  text-align: center;
+}
+
+.picker-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* Общее правило input { width: 100% } — поиск растягивается, год рядом по своей ширине */
+.picker-dialog .picker-search {
+  flex: 1 1 14rem;
+  width: auto;
+}
+
+.picker-dialog .picker-year {
+  flex: 0 0 auto;
+  width: auto;
+}
+
+.picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 11rem), 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.picker-card {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: var(--space-2);
+  width: 100%;
+  height: 100%;
+  padding: var(--space-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.picker-card:hover {
+  border-color: var(--line-strong);
+}
+
+/* Выбранная — красная рамка в цвет основных кнопок */
+.picker-card[aria-pressed="true"] {
+  border-color: var(--brand-strong);
+  box-shadow: inset 0 0 0 1px var(--brand-strong);
+}
+
+.picker-card.is-full {
+  cursor: default;
+}
+
+.picker-thumb {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--draft-bg);
+}
+
+.picker-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.picker-card-text {
+  display: grid;
+  align-content: start;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.picker-title {
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.picker-meta {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  line-height: 1.3;
+}
+
+/* Действие карточки: «Добавить» — контурная кнопка, «№ 2 · убрать» — красная плашка выбранного */
+.picker-action {
+  justify-self: start;
+  padding: 0.25rem var(--space-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.picker-card:hover .picker-action {
+  border-color: var(--ink);
+}
+
+.picker-card[aria-pressed="true"] .picker-action {
+  border-color: var(--brand-strong);
+  background: var(--brand-strong);
+  color: var(--surface);
+}
+
+.picker-card.is-full .picker-action {
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+/* Телефон: окно во весь экран, кнопки строк крупнее, перетаскивания нет — только ↑/↓ */
+@media (max-width: 640px) {
+  .picker-dialog {
+    width: 100vw;
+    height: 100dvh;
+    border-radius: 0;
+  }
+
+  .picker-body {
+    padding: var(--space-3);
+  }
+
+  .picker-row {
+    grid-template-columns: 1.25rem 3.25rem minmax(0, 1fr) auto;
+    gap: var(--space-2);
+  }
+
+  .picker-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .picker-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  .picker-chosen-wrap .picker-section-note {
+    display: none;
+  }
+}
+
+/* Форма проекта на широком экране — после правил 720 px, иначе их grid-column: auto перебьёт span */
+@media (min-width: 1000px) {
+  /* Промежуток между колонками чуть меньше: «Планировка стенда обязательно» — в одну строку */
+  .form-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: var(--space-3);
+  }
+
+  .form-grid > .field-half {
+    grid-column: span 2;
+  }
+
+  .form-grid > .field-three {
+    grid-column: span 3;
+  }
+}
+
+/* Видеоотзывы в Редакторе (группа «Видеоотзывы»): форма «+ Добавить видео», список «Все видео»
+   с плеером под строкой и полями в «Изменить»; значок видео в окне выбора */
+.video-library {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.video-library h3 {
+  margin-bottom: 0;
+}
+
+.video-add > summary {
+  width: fit-content;
+  list-style: none;
+}
+
+.video-add > summary::-webkit-details-marker {
+  display: none;
+}
+
+.video-add[open] > summary {
+  margin-bottom: var(--space-3);
+}
+
+.video-add-body {
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+}
+
+.video-add-actions,
+.picker-add-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* «+ Добавить видео» в окне выбора: кнопка справа в заголовке каталога, форма — над поиском */
+.picker-section-head [data-picker-add-open] {
+  margin-left: auto;
+}
+
+.picker-add {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+}
+
+.picker-add h4 {
+  margin: 0;
+  font-size: var(--fs-sm);
+}
+
+.picker-add .field {
+  margin: 0;
+}
+
+.picker-add [aria-invalid="true"] {
+  border-color: var(--error-ink);
+}
+
+.picker-add-done {
+  margin: 0;
+  font-size: var(--fs-sm);
+}
+
+.picker-add-done {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--ok-bg);
+  color: var(--ok-ink);
+}
+
+.video-player-box {
+  margin-bottom: var(--space-3);
+}
+
+.video-player-box p {
+  margin: 0;
+}
+
+.video-preview {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--hall);
+}
+
+.video-edit > summary {
+  width: fit-content;
+  color: var(--brand-strong);
+  font-size: var(--fs-sm);
+}
+
+.video-edit[open] > summary {
+  margin-bottom: var(--space-2);
+}
+
+/* Видео в окне выбора и в списках: те же размеры миниатюр, что у проектов (4:3); обложка RuTube
+   во весь кадр, поверх — значок воспроизведения и пометка «RuTube». Без обложки — только значок */
+.picker-thumb-video {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.picker-thumb-video img {
+  position: absolute;
+  inset: 0;
+}
+
+.picker-video-play {
+  position: relative;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.picker-row-thumb:has(.picker-video-play) {
+  display: grid;
+  place-items: center;
+}
+
+.picker-row-thumb .picker-video-play {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.picker-video-play circle {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 1.5;
+}
+
+.picker-video-play path {
+  fill: var(--brand-strong);
+}
+
+.picker-video-badge {
+  position: absolute;
+  top: 0.375rem;
+  left: 0.375rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  background: var(--ink);
+  color: var(--surface);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* --- Видеоотзывы: библиотека карточками, форма «+ Добавить видео», обложки (admin-videos.js) --- */
+
+.vlib-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.vlib-head h3 {
+  margin: 0;
+}
+
+.vlib-search {
+  width: 100%;
+}
+
+.vlib-grid {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Карточка: обложка 16:9 слева, подписи и состояние справа, действия — строкой ниже */
+.vcard {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.vcard[hidden] {
+  display: none;
+}
+
+.vcard:target {
+  outline: 2px solid var(--focus);
+}
+
+.vcard.is-off {
+  background: var(--paper);
+}
+
+.vcard.is-off .vcard-media {
+  opacity: 0.6;
+}
+
+.vcard-media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  align-self: start;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--draft-bg);
+}
+
+.vcard-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vcard-badge,
+.vcard-home {
+  position: absolute;
+  padding: 0.0625rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.vcard-badge {
+  top: 0.25rem;
+  left: 0.25rem;
+  background: var(--ink);
+  color: var(--surface);
+}
+
+.vcard-home {
+  right: 0.25rem;
+  bottom: 0.25rem;
+  left: 0.25rem;
+  width: fit-content;
+  background: var(--ok-bg);
+  color: var(--ok-ink);
+}
+
+.vcard-body {
+  display: grid;
+  align-content: start;
+  gap: 0.25rem;
+  min-width: 0;
+  font-size: var(--fs-sm);
+  overflow-wrap: anywhere;
+}
+
+.vcard-title {
+  font-size: var(--fs-base);
+  line-height: 1.3;
+}
+
+.vcard.is-off .vcard-title {
+  color: var(--muted);
+}
+
+.vcard-text {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.vcard-toggle {
+  margin-top: var(--space-1);
+  font-size: var(--fs-sm);
+}
+
+.vcard-actions,
+.vcard-status,
+.vcard > .video-player-box,
+.vcard-cover,
+.vcard > .video-edit {
+  grid-column: 1 / -1;
+}
+
+.vcard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.vcard > .video-player-box {
+  margin: 0;
+}
+
+.vcard-cover {
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+}
+
+/* Источник ролика — переключатель из двух кнопок */
+.segmented {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.1875rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+}
+
+.segmented[hidden] {
+  display: none;
+}
+
+.segmented-item {
+  min-height: 2.25rem;
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.segmented-item[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--surface);
+}
+
+.segmented-item:disabled {
+  cursor: progress;
+}
+
+.video-adder {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.video-adder .field {
+  margin: 0;
+}
+
+.video-adder [aria-invalid="true"] {
+  border-color: var(--error-ink);
+  outline: 1px solid var(--error-ink);
+}
+
+.video-adder-preview .video-preview,
+.vcard .video-preview {
+  max-height: 20rem;
+}
+
+.file-pick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.file-pick-name {
+  min-width: 0;
+  font-size: var(--fs-sm);
+  overflow-wrap: anywhere;
+}
+
+/* Обложка: превью 16:9 и кнопки выбора */
+.cover-pick {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.cover-pick legend {
+  margin-bottom: var(--space-2);
+  padding: 0;
+  font-weight: 600;
+}
+
+.cover-pick-body {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.cover-preview {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(100%, 16rem);
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--draft-bg);
+}
+
+.cover-preview img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cover-preview-empty {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.cover-pick-side {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.cover-pick-note {
+  margin: 0;
+  font-size: var(--fs-sm);
+}
+
+.cover-pick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.cover-source {
+  width: 100%;
+  max-height: 14rem;
+  border-radius: var(--radius-sm);
+  background: var(--hall);
+}
+
+.upload-progress {
+  display: grid;
+  gap: var(--space-1);
+  font-size: var(--fs-sm);
+}
+
+.upload-progress[hidden] {
+  display: none;
+}
+
+.upload-progress progress {
+  width: 100%;
+  height: 0.5rem;
+  accent-color: var(--brand-strong);
+}
+
+.adder-message {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--ok-bg);
+  color: var(--ok-ink);
+  font-size: var(--fs-sm);
+}
+
+.adder-message.is-error {
+  background: var(--error-bg);
+  color: var(--error-ink);
+}
+
+.adder-message[hidden] {
+  display: none;
+}

@@ -1,0 +1,10 @@
+{#- Шторка «О нас» — только если на главной нет блока type "about" (иначе цифры там) #}
+{%- from "partials/about.html" import about_stats with context %}
+{%- macro no_mark() %}{% if varargs %}{% endif %}{% endmacro %}
+    {%- for paragraph in page.get("paragraphs", []) %}
+    <p class="prose">{{ paragraph }}</p>
+    {%- endfor %}
+    {%- if page.stats or page.founded_year %}
+    <h3 class="sheet-subtitle">{{ page.stats_title or "Компания в цифрах" }}</h3>
+    {{ about_stats(page, no_mark) }}
+    {%- endif %}

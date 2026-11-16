@@ -1,0 +1,19 @@
+{#- «О нас» на главной — после «Реализовано»: работы уже показаны, цифры их подкрепляют.
+    Данные — раздел type "about" в pages.json (правятся в «Редакторе», группа «Раздел: О нас»),
+    здесь только место блока в home.json. Своей шторки у раздела тогда нет, меню ведёт сюда. #}
+{%- from "partials/about.html" import about_stats with context %}
+{%- set page = about_page %}
+{%- macro mark() %}{{ edit("pages", about_index, *varargs) if about_index is not none else "" }}{% endmacro %}
+  {#- Без заголовка: блок начинается сразу с цифр; имя для экранных дикторов — название раздела #}
+  <section class="section about is-paper" id="{{ section.id }}" aria-label="{{ page.title or page.nav or "О нас" }}">
+    <div class="container">
+      {%- if page.get("paragraphs") %}
+      <div class="section-head">
+        {%- for paragraph in page.paragraphs %}
+        <p class="section-lead" data-reveal>{{ paragraph }}</p>
+        {%- endfor %}
+      </div>
+      {%- endif %}
+      {{ about_stats(page, mark) }}
+    </div>
+  </section>

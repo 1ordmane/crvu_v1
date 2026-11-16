@@ -1,0 +1,29 @@
+{#- Цифры «О нас» — общие для блока на главной и для шторки (если блока на главной нет).
+    Первые три цифры — главные: крупно, в три колонки; число и «+» — фирменным цветом. Год основания и остальные цифры —
+    мелкой строкой ниже, чтобы не спорить с главными. mark(...) — метки полей для предпросмотра
+    редактора (путь в pages.json), на сайте пусто. #}
+{%- macro about_stats(page, mark) %}
+{%- set stats = page.get("stats") or [] %}
+{%- if stats %}
+<ul class="stats">
+  {%- for stat in stats[:3] %}
+  <li class="stat" data-reveal>
+    <span class="stat-value"><span class="stat-number" data-count="{{ stat.value }}"{{ mark("stats", loop.index0, "value") }}>{{ "{:,}".format(stat.value).replace(",", " ") }}</span>
+      {%- if stat.suffix %}<span class="stat-suffix"{{ mark("stats", loop.index0, "suffix") }}>{{ stat.suffix }}</span>{% endif %}</span>
+    <span class="stat-label"{{ mark("stats", loop.index0, "label") }}>{{ stat.label }}</span>
+  </li>
+  {%- endfor %}
+</ul>
+{%- endif %}
+{%- if page.founded_year or stats[3:] %}
+<div class="stats-more" data-reveal>
+  {%- if page.founded_year %}
+  <p{{ mark("since_text") }}>{{ (page.since_text or "Работаем с {year} года — уже {years}")|replace("{year}", page.founded_year|string)|replace("{years}", years_since) }}</p>
+  {%- endif %}
+  {%- for stat in stats[3:] %}
+  {%- set at = loop.index0 + 3 %}
+  <p><strong{{ mark("stats", at, "value") }}>{{ "{:,}".format(stat.value).replace(",", " ") }}{{ stat.suffix }}</strong> <span{{ mark("stats", at, "label") }}>{{ stat.label }}</span></p>
+  {%- endfor %}
+</div>
+{%- endif %}
+{%- endmacro %}
