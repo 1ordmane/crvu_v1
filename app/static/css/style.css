@@ -17,15 +17,21 @@
 :root {
   color-scheme: light;
 
-  /* Фирменные цвета ЦРВУ (из логотипа) */
-  --brand: #F04624;
-  --brand-strong: #D93A1B;   /* фон кнопок: белый текст 4.6:1 */
-  --brand-strong-hover: #C2321A;
-  --brand-text: #C9361A;     /* ссылки и акценты на светлом фоне: 4.7:1 */
-  /* Фильтры портфолио: выбранное — красной рамкой и схемой; белый текст на этом цвете не читается
-     (4:1), поэтому подпись остаётся тёмной */
-  --filter-accent: #FF0000;
-  --filter-accent-tint: rgb(255 0 0 / 0.07);
+  /* Фирменный оранжевый ЦРВУ — #F15A2B, как на логотипе. Остальные оттенки — тот же тон, темнее:
+     белый текст и мелкие подписи на самом #F15A2B не читаются (3.4:1) */
+  --brand: #F15A2B;
+  --brand-strong: #D73E0E;   /* фон кнопок: белый текст 4.6:1 */
+  --brand-strong-hover: #BF370D;
+  --brand-text: #C7390D;     /* ссылки и акценты на светлом фоне: 4.8:1 */
+  /* Цвета логотипа (встроенный SVG) — свои: смена фирменного акцента логотип не перекрашивает */
+  --logo-accent: #F04624;
+  /* Ошибки (неверное поле, неотправленная заявка) — красные, отдельно от фирменного оранжевого */
+  --error: #F04624;
+  --error-text: #C9361A;     /* на светлом фоне: 4.7:1 */
+  /* Фильтры портфолио: выбранное — фирменной рамкой и схемой; белый текст на этом цвете не читается,
+     поэтому подпись остаётся тёмной */
+  --filter-accent: var(--brand);
+  --filter-accent-tint: rgb(241 90 43 / 0.07);
 
   --ink: #2C2829;
   --ink-soft: #4A4445;
@@ -119,7 +125,7 @@
   --fab-size: 3.5rem;
   --fab-offset: max(var(--space-4), calc(env(safe-area-inset-bottom, 0px) + var(--space-2)));
   --fab-clearance: calc(var(--fab-size) + var(--fab-offset) + var(--space-4));
-  /* Светлая обводка кнопки: отделяет её от красных и тёмных деталей сцены и фото */
+  /* Светлая обводка кнопки: отделяет её от оранжевых и тёмных деталей сцены и фото */
   --fab-ring: rgb(255 255 255 / 0.35);
   --tap-min: 2.75rem;
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -161,7 +167,7 @@
   --scene-veil: linear-gradient(90deg, rgb(var(--shade) / 0.72), rgb(var(--shade) / 0.5) 40%, rgb(var(--shade) / 0.14) 72%, rgb(var(--shade) / 0));
   --scene-veil-narrow: rgb(var(--shade) / 0.6);
   --on-scene-line: rgb(246 244 241 / 0.22);
-  --brand-on-scene: #FF7552;
+  --brand-on-scene: #F47D58;   /* фирменный тон посветлее — на тёмной сцене 7:1 */
   --text-on-scene-soft: 0 1px 2px rgb(var(--shade) / 0.6), 0 0 1rem rgb(var(--shade) / 0.45);
   --smoke: rgb(var(--shade) / 0.46);
   --smoke-edge: rgb(255 255 255 / 0.16);
@@ -469,7 +475,7 @@ select {
   background: var(--line);
 }
 
-/* Текущий раздел — тёмный текст с фирменной чертой: на прозрачном стекле красный
+/* Текущий раздел — тёмный текст с фирменной чертой: на прозрачном стекле оранжевый
    текст не держит контраст 4,5:1, а черта отличает пункт не только цветом */
 .site-nav a[aria-current="page"] {
   color: var(--ink);
@@ -1724,7 +1730,7 @@ main,
 }
 
 .plan-floor {
-  fill: rgb(240 70 36 / 0.14);
+  fill: rgb(241 90 43 / 0.14);
   stroke: var(--brand);
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
@@ -1842,7 +1848,7 @@ main,
 
 .field input:user-invalid,
 .field textarea:user-invalid {
-  border-color: var(--brand-text);
+  border-color: var(--error-text);
 }
 
 .cfg-area-value {
@@ -1898,11 +1904,11 @@ main,
 
 .cfg-hint:not(:empty) {
   padding-left: var(--space-3);
-  border-left: 3px solid var(--brand);
+  border-left: 3px solid var(--error);
 }
 
 .stepper:has(.stepper-input[aria-invalid="true"]) {
-  box-shadow: inset 0 0 0 1px var(--brand-text);
+  box-shadow: inset 0 0 0 1px var(--error-text);
 }
 
 .stepper {
@@ -2747,8 +2753,8 @@ main,
 /* Портфолио */
 
 /* Фильтры: компактная светлая панель над вкладками годов — три строки «подпись — переключатели».
-   Кнопки 40 px: удобно пальцу и не раздувают панель. Выбранное — красной рамкой и лёгкой
-   подложкой; подпись остаётся тёмной (белый текст на #FF0000 не читается) */
+   Кнопки 40 px: удобно пальцу и не раздувают панель. Выбранное — фирменной рамкой и лёгкой
+   подложкой; подпись остаётся тёмной (белый текст на фирменном оранжевом не читается) */
 /* Кнопка «Фильтры» над вкладками годов; число на ней — сколько фильтров выбрано */
 .pf-bar {
   margin-bottom: var(--space-4);
@@ -2798,7 +2804,7 @@ main,
   stroke-linecap: round;
 }
 
-/* Белый текст — на фирменном красном потемнее (4.6:1): на #FF0000 мелкая цифра не читается */
+/* Белый текст — на фирменном оранжевом потемнее (4.6:1): на самом #F15A2B мелкая цифра не читается */
 .pf-badge {
   display: inline-grid;
   place-items: center;
@@ -3213,7 +3219,7 @@ main,
   color: var(--brand);
 }
 
-/* Значок воспроизведения: красный круг с треугольником (без картинок и SVG) */
+/* Значок воспроизведения: фирменный оранжевый круг с треугольником (без картинок и SVG) */
 .play-icon,
 .gallery-thumb-play {
   position: relative;
@@ -3330,7 +3336,7 @@ main,
   white-space: nowrap;
 }
 
-/* Число и «+» — фирменный оранжево-красный (крупный текст: контраст 3.4:1 на «бумаге»);
+/* Число и «+» — фирменный оранжевый (крупный текст: контраст 3.1:1 на «бумаге»);
    «м²» — в подписи под числом, тёмно-серым */
 .stat-value {
   color: var(--brand);
@@ -3613,9 +3619,10 @@ main,
   font-size: var(--fs-xs);
 }
 
+/* Сообщение о неудаче отправки — красная черта ошибки */
 .form-status {
   padding: var(--space-3) var(--space-4);
-  border-left: 3px solid var(--brand);
+  border-left: 3px solid var(--error);
   background: var(--lg-inset);
   font-size: var(--fs-sm);
   line-height: 1.4;
@@ -3664,13 +3671,13 @@ main,
 
 .field-error {
   margin-top: var(--space-2);
-  color: var(--brand-text);
+  color: var(--error-text);
   font-size: var(--fs-sm);
   font-weight: var(--fw-strong);
 }
 
 .field input[aria-invalid="true"] {
-  border-color: var(--brand-text);
+  border-color: var(--error-text);
 }
 
 /* Поле-ловушка для ботов: вне экрана и вне порядка табуляции, экранным дикторам скрыто */
